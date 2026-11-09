@@ -11,7 +11,7 @@
         "eslint-config-prettier": "^10.1.8",
         "globals": "^17.14.0",
         "prettier": "^3.9.10",
-        "soaring-symbols": "^0.2.3",
+        "soaring-symbols": "^0.2.4",
       },
     },
   },
@@ -190,7 +190,7 @@
 
     "shebang-regex": ["shebang-regex@3.0.0", "", {}, "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A=="],
 
-    "soaring-symbols": ["soaring-symbols@0.2.3", "", {}, "sha512-mpf2niRAy60/LmZLxvSDwv3LCBiD1Qd7pHiUNDS6Y+X55xgFdFyQqsTkRQX06jM7BuUWs1QFxhR4x1T9Oa7pAg=="],
+    "soaring-symbols": ["soaring-symbols@0.2.4", "", {}, "sha512-S7NXXnInBHjbiNC+JgwLR1sRsa15y+cuA264iD3J+J8Hzj/Pl1VpR+NZHqxJzNRtgfSwCzJhK0mrcjy/TidcqQ=="],
 
     "type-check": ["type-check@0.4.0", "", { "dependencies": { "prelude-ls": "^1.2.1" } }, "sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew=="],
 
