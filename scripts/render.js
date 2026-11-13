@@ -129,7 +129,7 @@ const panel = `
   ${list}
   <rect x="${PX}" y="${PY + PH - 64}" width="${PW}" height="64" fill="#ffffff"/>
   <rect x="${PX}" y="${PY + PH - 64}" width="${PW}" height="2" fill="#e6e6e6"/>
-  <text x="${PX + 28}" y="${PY + PH - 24}" font-size="19" fill="#757575">Click a mark to insert it, or drag it onto the canvas.</text>
+  <text x="${PX + 28}" y="${PY + PH - 25}" font-size="19" fill="#757575">Click a mark to insert it, or drag it onto the canvas.</text>
 </g>`
 
 // A tile being dragged out of the panel, with the pointer on it
@@ -161,6 +161,8 @@ const placed = [
     )
     .join('\n')
 
+// Text is set by its baseline: a line beside a mark or in a bar goes half its
+// cap height (0.7em in Overpass, 0.727em in Inter) below the middle
 const brandMark = mark.replace(
     '<svg ',
     '<svg width="56" height="56" x="120" y="110" ',
@@ -169,7 +171,7 @@ const brandMark = mark.replace(
 const thumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="Overpass">
 <rect width="1920" height="1080" fill="${DARK}"/>
 <g>${brandMark}</g>
-<text x="196" y="149" font-size="36" font-weight="700" fill="${LIGHT}">Soaring Symbols</text>
+<text x="196" y="150.6" font-size="36" font-weight="700" fill="${LIGHT}">Soaring Symbols</text>
 <text font-size="92" font-weight="800" fill="${LIGHT}">
   <tspan x="120" y="370">Airline logos,</tspan>
   <tspan x="120" y="476">right in Figma.</tspan>
