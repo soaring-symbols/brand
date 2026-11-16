@@ -29,14 +29,17 @@ The typeface is [Overpass](https://fonts.google.com/specimen/Overpass), which de
 
 `exports/` holds what is rendered from them, committed so each integration can copy its file:
 
-| File                       | Size      | Used by                                                                 |
-| :------------------------- | :-------- | :---------------------------------------------------------------------- |
-| `github/avatar-signal.png` | 512×512   | The GitHub organization avatar (`avatar-board.png` is the dark option)  |
-| `raycast/icon-signal.png`  | 512×512   | [Raycast extension](https://github.com/soaring-symbols/raycast) icon    |
-| `figma/icon.png`           | 128×128   | [Figma plugin](https://github.com/soaring-symbols/figma) Community icon |
-| `figma/thumbnail.png`      | 1920×1080 | Figma plugin Community thumbnail                                        |
+| File                              | Size      | Used by                                                                                         |
+| :-------------------------------- | :-------- | :---------------------------------------------------------------------------------------------- |
+| `github/avatar-signal.png`        | 512×512   | The GitHub organization avatar (`avatar-board.png` is the dark option)                          |
+| `raycast/icon-signal.png`         | 512×512   | [Raycast extension](https://github.com/soaring-symbols/raycast) icon                            |
+| `figma/icon.png`                  | 128×128   | [Figma plugin](https://github.com/soaring-symbols/figma) Community icon                         |
+| `figma/thumbnail.png`             | 1920×1080 | Figma plugin Community thumbnail                                                                |
+| `web/apple-touch-icon.png`        | 180×180   | The [website](https://github.com/soaring-symbols/website)'s home screen icon on iPhone and iPad |
+| `web/icon-{192,512}.png`          | 192, 512  | The website's web app manifest icons, `purpose: "any"`                                          |
+| `web/icon-maskable-{192,512}.png` | 192, 512  | The same, `purpose: "maskable"`: the tiles shrunk to fit Android's 80% safe zone                |
 
-The website's favicon and social cards are drawn in the [website repo](https://github.com/soaring-symbols/website) itself.
+The website's favicon and social cards are drawn in the [website repo](https://github.com/soaring-symbols/website) itself; its home screen and manifest icons come from `web/`.
 
 ## Rendering
 

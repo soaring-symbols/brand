@@ -14,12 +14,13 @@ The Soaring Symbols project's own brand mark (not airline logos, which live in [
 
 The integrations keep a copy of their file; after changing a mark or the thumbnail, render, then copy the new file into each repo that uses it:
 
-| Export                     | Copied to                                              |
-| :------------------------- | :----------------------------------------------------- |
-| `raycast/icon-signal.png`  | `assets/extension-icon.png` in soaring-symbols/raycast |
-| `figma/icon.png`           | `store/icon.png` in soaring-symbols/figma              |
-| `figma/thumbnail.png`      | `store/thumbnail.png` in soaring-symbols/figma         |
-| `github/avatar-signal.png` | Uploaded by hand as the GitHub organization avatar     |
+| Export                     | Copied to                                                  |
+| :------------------------- | :--------------------------------------------------------- |
+| `raycast/icon-signal.png`  | `assets/extension-icon.png` in soaring-symbols/raycast     |
+| `figma/icon.png`           | `store/icon.png` in soaring-symbols/figma                  |
+| `figma/thumbnail.png`      | `store/thumbnail.png` in soaring-symbols/figma             |
+| `github/avatar-signal.png` | Uploaded by hand as the GitHub organization avatar         |
+| `web/*.png`                | `public/` in soaring-symbols/website, under the same names |
 
 The thumbnail shows the plugin's UI, so update it when the plugin's look or features change, and keep its text in step with `store/LISTING.md` in the figma repo.
 

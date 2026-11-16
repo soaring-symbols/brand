@@ -75,6 +75,57 @@ for (const variant of ['signal', 'board']) {
 }
 write('figma/icon.png', render(markSvg('square-signal'), 128))
 
+// Web icons for the website: the square mark for iOS home screens and the
+// manifest's "any" icons, and a maskable one for Android, which masks icons
+// to shapes as small as a circle 80% of the icon wide. The square tiles reach
+// past that circle, so the maskable mark shrinks them about the center until
+// every tile, corners included, fits inside it.
+const MASKABLE_SCALE = 0.85
+
+const maskable = (svg) => {
+    const tiles = [
+        ...svg.matchAll(
+            /<clipPath[^>]*><rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)" rx="([\d.]+)"\/>/g,
+        ),
+    ].map((m) => m.slice(1).map(Number))
+    if (!tiles.length) throw new Error('No tiles found in the square mark')
+
+    // The farthest point of a rounded tile from the center lies on the arc of
+    // its farthest corner
+    const reach = Math.max(
+        ...tiles.map(([x, y, w, h, rx]) => {
+            const dx = Math.max(
+                Math.abs(x + rx - 256),
+                Math.abs(x + w - rx - 256),
+            )
+            const dy = Math.max(
+                Math.abs(y + rx - 256),
+                Math.abs(y + h - rx - 256),
+            )
+
+            return Math.hypot(dx, dy) + rx
+        }),
+    )
+    if (reach * MASKABLE_SCALE > 0.4 * 512) {
+        throw new Error('The maskable mark leaves the 80% safe zone')
+    }
+
+    // Keep the background rect at full size and scale everything after it
+    return svg
+        .replace(
+            /(<rect width="512" height="512"[^>]*\/>)/,
+            `$1\n<g transform="translate(256 256) scale(${MASKABLE_SCALE}) translate(-256 -256)">`,
+        )
+        .replace('</svg>', '</g>\n</svg>')
+}
+
+const webMark = markSvg('square-signal')
+write('web/apple-touch-icon.png', render(webMark, 180))
+for (const width of [192, 512]) {
+    write(`web/icon-${width}.png`, render(webMark, width))
+    write(`web/icon-maskable-${width}.png`, render(maskable(webMark), width))
+}
+
 const mark = markSvg('square-signal')
 const asset = (slug, file) =>
     readFileSync(`${ASSETS}/${slug}/${file}.svg`, 'utf8')
