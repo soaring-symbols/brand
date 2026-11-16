@@ -46,3 +46,7 @@ npm run render
 ```
 
 `scripts/render.js` renders every file in `exports/` with resvg. Fonts are downloaded from Google Fonts on the first run and cached in `node_modules/.cache/brand`. The airline marks in the Figma thumbnail come from the `soaring-symbols` package.
+
+## License
+
+The Soaring Symbols name and mark, and every file in `marks/` and `exports/`, are © 2026 Anh Thang, all rights reserved. They are not licensed for reuse: you may show them unchanged only to refer or link to the Soaring Symbols project and its integrations. The airline marks in the Figma thumbnail belong to their owners (see the package's [Disclaimer](https://github.com/soaring-symbols/soaring-symbols/blob/main/DISCLAIMER.md)), and Overpass is licensed under the SIL Open Font License 1.1.
