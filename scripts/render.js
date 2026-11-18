@@ -139,45 +139,77 @@ const DARK = '#1f242b',
     LIGHT = '#ecebe4',
     YELLOW = '#ffc20e'
 
-// The plugin panel, drawn as it looks in Figma's light theme, at 1.6x
+// The plugin panel, drawn as it looks in Figma's light theme at about 1.8x:
+// an airline's marks, a row per mark type and a column per version
 const PX = 1040,
     PY = 150,
     PW = 640,
     PH = 820,
     R = 20
-const rows = [
-    ['Vietnam Airlines', 'VN · HVN · VN', 'vietnam-airlines'],
-    ['Singapore Airlines', 'SQ · SIA · SG', 'singapore-airlines'],
-    ['Qatar Airways', 'QR · QTR · QA', 'qatar-airways'],
-    ['Turkish Airlines', 'TK · THY · TR', 'turkish-airlines'],
-    ['Japan Airlines', 'JL · JAL · JP', 'japan-airlines'],
-    ['Air Canada', 'AC · ACA · CA', 'air-canada'],
-    ['Lufthansa', 'LH · DLH · DE', 'lufthansa'],
-]
-const rowH = 84
-const list = rows
-    .map(([name, codes, slug], i) => {
-        const y = PY + 112 + i * rowH
-        const hover =
-            i === 0
-                ? `<rect x="${PX}" y="${y}" width="${PW}" height="${rowH}" fill="#f5f5f5"/>`
-                : ''
+const PAD = 28,
+    GAP = 14
+const columns = ['Color', 'Mono', 'Dark background']
+const colW = (PW - 2 * PAD - 2 * GAP) / 3
+const colX = (i) => PX + PAD + i * (colW + GAP)
+const tileH = 124
+const CHECKER = `<pattern id="checker" width="20" height="20" patternUnits="userSpaceOnUse">
+  <rect width="20" height="20" fill="#ffffff"/>
+  <rect width="10" height="10" fill="#f0f0f0"/>
+  <rect x="10" y="10" width="10" height="10" fill="#f0f0f0"/>
+</pattern>`
+// A tile with its version of the mark: on a checkerboard, or on dark for
+// the one made for dark backgrounds
+const tile = (svg, i, y, dark, markW) => {
+    const x = colX(i)
+    const inner = `<rect x="${x + 6}" y="${y + 6}" width="${colW - 12}" height="${tileH - 12}" rx="7" fill="${dark ? '#1e1e1e' : 'url(#checker)'}"/>`
 
-        return `${hover}${img(asset(slug, 'icon'), PX + 28, y + 18, 48)}
-<text x="${PX + 100}" y="${y + 38}" font-size="24" font-weight="700" fill="#1e1e1e">${esc(name)}</text>
-<text x="${PX + 100}" y="${y + 66}" font-size="20" fill="#757575">${esc(codes)}</text>`
+    return `<rect x="${x}" y="${y}" width="${colW}" height="${tileH}" rx="10" fill="#ffffff" stroke="#e6e6e6" stroke-width="2"/>
+${inner}${img(svg, x + (colW - markW) / 2, y + (tileH - markW) / 2, markW)}`
+}
+const markRows = [
+    ['Logo', 'logo'],
+    ['Stacked logo', 'logo-stacked'],
+    ['Icon', 'icon'],
+]
+const rowsTop = PY + 108 + 64 + 64
+const rowH = 40 + tileH + 8
+const grid = markRows
+    .map(([label, type], r) => {
+        const y = rowsTop + r * rowH
+        const markW = { logo: 150, 'logo-stacked': 116, icon: 92 }[type]
+
+        return `<text x="${PX + PAD}" y="${y + 28}" font-size="20" font-weight="700" fill="#1e1e1e">${label}</text>
+${tile(asset('vietnam-airlines', type), 0, y + 40, false, markW)}
+${tile(asset('vietnam-airlines', `${type}-mono`), 1, y + 40, false, markW)}
+${tile(asset('vietnam-airlines', `${type}-dark`), 2, y + 40, true, markW)}`
     })
     .join('\n')
 
 const panel = `
+<defs>${CHECKER}</defs>
 <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" rx="${R}" fill="#ffffff"/>
 <clipPath id="panel"><rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" rx="${R}"/></clipPath>
 <g clip-path="url(#panel)" font-family="Inter">
-  <rect x="${PX + 20}" y="${PY + 22}" width="${PW - 40}" height="64" rx="10" fill="none" stroke="#0d99ff" stroke-width="2.5"/>
-  <rect x="${PX + 42}" y="${PY + 40}" width="2.5" height="30" fill="#1e1e1e"/>
-  <text x="${PX + 52}" y="${PY + 63}" font-size="24" fill="#999999">Search by name, IATA or ICAO code</text>
-  <rect x="${PX}" y="${PY + 108}" width="${PW}" height="2" fill="#e6e6e6"/>
-  ${list}
+  <path d="M ${PX + 46} ${PY + 54} h 26 M ${PX + 46} ${PY + 54} l 11 -11 M ${PX + 46} ${PY + 54} l 11 11" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="${PX + 100}" y="${PY + 48}" font-size="24" font-weight="700" fill="#1e1e1e">Vietnam Airlines</text>
+  <text x="${PX + 100}" y="${PY + 78}" font-size="20" fill="#757575">VN · HVN · SkyTeam</text>
+  <rect x="${PX}" y="${PY + 106}" width="${PW}" height="2" fill="#e6e6e6"/>
+  <text x="${PX + PAD}" y="${PY + 147}" font-size="20" fill="#1e1e1e">Size</text>
+  <rect x="${PX + PAD + 56}" y="${PY + 122}" width="132" height="38" rx="7" fill="none" stroke="#e6e6e6" stroke-width="2"/>
+  <text x="${PX + PAD + 70}" y="${PY + 147}" font-size="20" fill="#1e1e1e">64 × 64</text>
+  <path d="M ${PX + PAD + 162} ${PY + 137} l 7 7 l 7 -7" fill="none" stroke="#1e1e1e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="${PX}" y="${PY + 172}" width="${PW}" height="2" fill="#e6e6e6"/>
+  ${columns
+      .map(
+          (title, i) =>
+              `<text x="${colX(i)}" y="${PY + 211}" font-size="20" font-weight="700" fill="#757575">${title}</text>`,
+      )
+      .join('\n  ')}
+  <rect x="${colX(1) + 62}" y="${PY + 191}" width="28" height="28" rx="6" fill="#ffffff" stroke="#e6e6e6" stroke-width="2"/>
+  <rect x="${colX(1) + 67}" y="${PY + 196}" width="18" height="18" rx="3" fill="#000000"/>
+  <circle cx="${colX(1) + 110}" cy="${PY + 205}" r="14" fill="#d99e09" stroke="#e6e6e6" stroke-width="2"/>
+  <rect x="${PX}" y="${PY + 234}" width="${PW}" height="2" fill="#e6e6e6"/>
+  ${grid}
   <rect x="${PX}" y="${PY + PH - 64}" width="${PW}" height="64" fill="#ffffff"/>
   <rect x="${PX}" y="${PY + PH - 64}" width="${PW}" height="2" fill="#e6e6e6"/>
   <text x="${PX + 28}" y="${PY + PH - 25}" font-size="19" fill="#757575">Click a mark to insert it, or drag it onto the canvas.</text>
@@ -197,8 +229,8 @@ const drag = `
 // Marks already placed on the "canvas" behind the text
 const placed = [
     ['qatar-airways', 'logo', 120, 760, 180],
-    ['turkish-airlines', 'logo', 340, 760, 180],
-    ['japan-airlines', 'logo', 560, 760, 180],
+    ['turkish-airlines', 'logo-dark', 340, 760, 180],
+    ['japan-airlines', 'logo-stacked', 560, 760, 180],
 ]
     .map(
         ([
@@ -208,7 +240,7 @@ const placed = [
             y,
             s,
         ]) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="16" fill="#2b3139"/>
-<rect x="${x + 12}" y="${y + 12}" width="${s - 24}" height="${s - 24}" rx="10" fill="#ffffff"/>${img(asset(slug, file), x + 18, y + 18, s - 36)}`,
+<rect x="${x + 12}" y="${y + 12}" width="${s - 24}" height="${s - 24}" rx="10" fill="${file.endsWith('-dark') ? '#1e1e1e' : '#ffffff'}"/>${img(asset(slug, file), x + 18, y + 18, s - 36)}`,
     )
     .join('\n')
 
@@ -228,8 +260,8 @@ const thumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080
   <tspan x="120" y="476">right in Figma.</tspan>
 </text>
 <text font-size="34" fill="${LIGHT}" fill-opacity="0.72">
-  <tspan x="120" y="572">Search by name, IATA or ICAO code, then click</tspan>
-  <tspan x="120" y="620">or drag a logo, icon or tail onto the canvas.</tspan>
+  <tspan x="120" y="572">Search by name or code, then drag a logo, icon</tspan>
+  <tspan x="120" y="620">or tail in color, mono or for dark backgrounds.</tspan>
 </text>
 <rect x="120" y="680" width="160" height="12" rx="6" fill="${YELLOW}"/>
 ${placed}
