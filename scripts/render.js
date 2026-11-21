@@ -5,35 +5,12 @@
 // node_modules/.cache/brand: Overpass, the brand typeface, and Inter for the
 // mock Figma plugin panel, as Figma draws its UI in it. The airline marks in
 // the thumbnail come from the soaring-symbols package in node_modules.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname } from 'node:path'
 import { Resvg } from '@resvg/resvg-js'
+import { ROOT, googleFont } from './fonts.js'
 
-const ROOT = resolve(import.meta.dirname, '..')
-const CACHE = `${ROOT}/node_modules/.cache/brand`
 const ASSETS = `${ROOT}/node_modules/soaring-symbols/dist/assets`
-mkdirSync(CACHE, { recursive: true })
-
-// TrueType files of a Google Fonts family, one per weight. Google serves
-// TTF (which resvg needs) to a client that doesn't ask for WOFF2.
-const googleFont = async (family, weights) => {
-    const files = weights.map((w) => `${CACHE}/${family}-${w}.ttf`)
-    if (files.every((file) => existsSync(file))) return files
-
-    const css = await fetch(
-        `https://fonts.googleapis.com/css2?family=${family}:wght@${weights.join(';')}`,
-    ).then((res) => res.text())
-    for (const [, weight, url] of css.matchAll(
-        /font-weight: (\d+);[\s\S]*?url\((\S+?\.ttf)\)/g,
-    )) {
-        const font = await fetch(url).then((res) => res.arrayBuffer())
-        writeFileSync(`${CACHE}/${family}-${weight}.ttf`, Buffer.from(font))
-    }
-    const missing = files.filter((file) => !existsSync(file))
-    if (missing.length) throw new Error(`Fonts not downloaded: ${missing}`)
-
-    return files
-}
 
 const FONTS = [
     ...(await googleFont('Overpass', [400, 700, 800])),
