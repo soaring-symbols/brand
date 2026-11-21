@@ -110,7 +110,6 @@ const uri = (svg) =>
     `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
 const img = (svg, x, y, w, h = w) =>
     `<image href="${uri(svg)}" x="${x}" y="${y}" width="${w}" height="${h}"/>`
-const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 
 const DARK = '#1f242b',
     LIGHT = '#ecebe4',
