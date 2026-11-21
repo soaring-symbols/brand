@@ -14,21 +14,18 @@ const NAME = 'Soaring Symbols'
 
 const BOARD = '#1f242b'
 const PAPER = '#ecebe4'
-const SIGNAL = '#ffc20e'
 const MONO = '#000000'
 
 // The tiles in square-*.svg
 const TILES = { x0: 65, x1: 447, y0: 127, y1: 385, w: 184, h: 258, r: 18 }
 
-// On dark, the tiles a step lighter so they stand off the background, with
-// signal-yellow letters as on a departure board: each color of
-// square-signal.svg's tiles, and what it becomes. The flaps are the
-// website's in dark mode: #38404b, and 12% darker below
+// On dark, the flaps a step lighter so they stand off the background, as the
+// website's in dark mode: #38404b, and 12% darker below. The letters and the
+// hinge stay as they are; signal yellow is kept for the app icons'
+// background (square-signal.svg, rounded-signal.svg)
 const DARK = {
     '#2b3139': '#38404b', // flap top
     '#262b32': '#313842', // flap bottom
-    '#ecebe4': SIGNAL, // letters
-    '#13161a': BOARD, // hinge
 }
 
 // The name: caps 150 high beside the tiles, centred on them and 110 after
