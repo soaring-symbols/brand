@@ -22,10 +22,18 @@ The typeface is [Overpass](https://fonts.google.com/specimen/Overpass), which de
 
 ## Files
 
-`marks/` holds the sources, 512×512 SVGs:
+`marks/` holds the sources. The icons are 512×512 SVGs:
 
 - `square-signal.svg`, `square-board.svg`: fill the frame, for places that crop or round the corners themselves.
 - `rounded-signal.svg`, `rounded-board.svg`: an app icon with its own rounded corners and margin.
+- `icon.svg`, `icon-dark.svg`: the mark cropped to the tiles, the tiles alone on light backgrounds, as in the website's header, and on their signal tile, as the favicon, on dark.
+- `icon-mono.svg`: the simple mark, the tiles alone in one color with the letters cut out and no hinge, so it holds at 16px.
+
+The lockups pair the mark with the name in Overpass ExtraBold, outlined, cropped to their content:
+
+- `logo.svg`, `logo-stacked.svg`: the name beside the tiles, or under them, on light backgrounds, as in the website's header.
+- `logo-dark.svg`, `logo-stacked-dark.svg`: the tiles on their signal tile and the name in paper, on dark backgrounds.
+- `logo-mono.svg`, `logo-stacked-mono.svg`: the simple mark and the name in black, for one-color use.
 
 `exports/` holds what is rendered from them, committed so each integration can copy its file:
 
@@ -43,8 +51,16 @@ The website's favicon and social cards are drawn in the [website repo](https://g
 
 ## Rendering
 
+The `icon*.svg` marks and the lockups are written by `scripts/marks.js` from the tiles of `square-signal.svg`, with the name outlined from Overpass ExtraBold. After changing the tiles or the script's sizes and spacing:
+
 ```bash
 npm install
+npm run marks
+```
+
+Then render the PNGs:
+
+```bash
 npm run render
 ```
 
