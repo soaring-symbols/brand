@@ -7,7 +7,7 @@ The Soaring Symbols project's own brand mark, and the icons and store images ren
 Two split-flap tiles reading "SS", like a departure board, in two colorways:
 
 - **Signal**: the tiles on wayfinding yellow, for app icons and avatars. The only place the yellow goes behind the mark.
-- **Board**: the tiles on departure-board dark.
+- **Board**: the tiles on departure-board dark, their flaps a step lighter so they stand off it, as in the dark marks.
 
 | Color            | Hex       | Use                                       |
 | :--------------- | :-------- | :---------------------------------------- |
