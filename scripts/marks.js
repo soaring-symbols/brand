@@ -22,10 +22,11 @@ const TILES = { x0: 65, x1: 447, y0: 127, y1: 385, w: 184, h: 258, r: 18 }
 
 // On dark, the tiles a step lighter so they stand off the background, with
 // signal-yellow letters as on a departure board: each color of
-// square-signal.svg's tiles, and what it becomes
+// square-signal.svg's tiles, and what it becomes. The flaps are the
+// website's in dark mode: #38404b, and 12% darker below
 const DARK = {
-    '#2b3139': '#3a424d', // flap top
-    '#262b32': '#343b45', // flap bottom
+    '#2b3139': '#38404b', // flap top
+    '#262b32': '#313842', // flap bottom
     '#ecebe4': SIGNAL, // letters
     '#13161a': BOARD, // hinge
 }
