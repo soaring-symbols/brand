@@ -17,10 +17,18 @@ const PAPER = '#ecebe4'
 const SIGNAL = '#ffc20e'
 const MONO = '#000000'
 
-// The tiles in square-*.svg, and the favicon's rounded crop of
-// square-signal.svg, which the dark icon and lockups stand on
+// The tiles in square-*.svg
 const TILES = { x0: 65, x1: 447, y0: 127, y1: 385, w: 184, h: 258, r: 18 }
-const PLATE = { x: 43, y: 43, size: 426, r: 85 }
+
+// On dark, the tiles a step lighter so they stand off the background, with
+// signal-yellow letters as on a departure board: each color of
+// square-signal.svg's tiles, and what it becomes
+const DARK = {
+    '#2b3139': '#3a424d', // flap top
+    '#262b32': '#343b45', // flap bottom
+    '#ecebe4': SIGNAL, // letters
+    '#13161a': BOARD, // hinge
+}
 
 // The name: caps 150 high beside the tiles, centred on them and 110 after
 // them; 120 high under them, 100 below and centred
@@ -104,7 +112,10 @@ const monoTiles = [TILES.x0, TILES.x1 - TILES.w]
     )
     .join('')
 
-const plate = `  <rect x="${PLATE.x}" y="${PLATE.y}" width="${PLATE.size}" height="${PLATE.size}" rx="${PLATE.r}" fill="${SIGNAL}"/>`
+const darkTiles = tiles.replace(
+    /fill="(#[0-9a-f]{6})"/g,
+    (_, hex) => `fill="${DARK[hex] ?? hex}"`,
+)
 const name = (d, fill) => `  <path d="${d}" fill="${fill}"/>`
 const mono = (d) => `  <path d="${d}" fill="${MONO}" fill-rule="evenodd"/>`
 
@@ -124,38 +135,31 @@ ${lines.join('\n')}
 }
 
 const onTiles = () => startBox(TILES.x0, TILES.y0, TILES.x1, TILES.y1)
-const onPlate = () =>
-    startBox(PLATE.x, PLATE.y, PLATE.x + PLATE.size, PLATE.y + PLATE.size)
 const middle = (TILES.y0 + TILES.y1) / 2
 const centre = (TILES.x0 + TILES.x1) / 2
 const wideBaseline = middle + WIDE.cap / 2
 
-// The icon: on light, the tiles alone as in the website's header; on dark,
-// on their signal plate, as the favicon
+// The icon: the tiles alone, as in the website's header, and recolored for
+// dark backgrounds
 onTiles()
 write('icon.svg', tiles)
-onPlate()
-write('icon-dark.svg', plate, tiles)
+onTiles()
+write('icon-dark.svg', darkTiles)
 onTiles()
 write('icon-mono.svg', mono(monoTiles))
 
-// Horizontal: on light, the tiles alone as in the website's header; on dark,
-// on their signal plate
+// Horizontal: the name beside the tiles, in board on light and paper on dark
 onTiles()
 write(
     'logo.svg',
     tiles,
     name(outline(WIDE.cap, TILES.x1 + WIDE.gap, wideBaseline), BOARD),
 )
-onPlate()
+onTiles()
 write(
     'logo-dark.svg',
-    plate,
-    tiles,
-    name(
-        outline(WIDE.cap, PLATE.x + PLATE.size + WIDE.gap, wideBaseline),
-        PAPER,
-    ),
+    darkTiles,
+    name(outline(WIDE.cap, TILES.x1 + WIDE.gap, wideBaseline), PAPER),
 )
 onTiles()
 write(
@@ -171,15 +175,11 @@ write(
     tiles,
     name(outline(STACKED.cap, centre, under(TILES.y1), true), BOARD),
 )
-onPlate()
+onTiles()
 write(
     'logo-stacked-dark.svg',
-    plate,
-    tiles,
-    name(
-        outline(STACKED.cap, centre, under(PLATE.y + PLATE.size), true),
-        PAPER,
-    ),
+    darkTiles,
+    name(outline(STACKED.cap, centre, under(TILES.y1), true), PAPER),
 )
 onTiles()
 write(

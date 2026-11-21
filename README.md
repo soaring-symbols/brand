@@ -9,14 +9,16 @@ Two split-flap tiles reading "SS", like a departure board, in two colorways:
 - **Signal**: the tiles on wayfinding yellow. The main mark.
 - **Board**: the tiles on departure-board dark.
 
-| Color       | Hex       | Use                        |
-| :---------- | :-------- | :------------------------- |
-| Signal      | `#ffc20e` | Background, the one accent |
-| Board       | `#1f242b` | Dark background            |
-| Flap top    | `#2b3139` | Upper half of a tile       |
-| Flap bottom | `#262b32` | Lower half of a tile       |
-| Hinge       | `#13161a` | The line across a tile     |
-| Paper       | `#ecebe4` | Letters and text on dark   |
+| Color            | Hex       | Use                                         |
+| :--------------- | :-------- | :------------------------------------------ |
+| Signal           | `#ffc20e` | The one accent: background, letters on dark |
+| Board            | `#1f242b` | Dark background                             |
+| Flap top         | `#2b3139` | Upper half of a tile                        |
+| Flap bottom      | `#262b32` | Lower half of a tile                        |
+| Dark flap top    | `#3a424d` | Upper half of a tile on dark                |
+| Dark flap bottom | `#343b45` | Lower half of a tile on dark                |
+| Hinge            | `#13161a` | The line across a tile                      |
+| Paper            | `#ecebe4` | Letters and text on dark                    |
 
 The typeface is [Overpass](https://fonts.google.com/specimen/Overpass), which descends from Highway Gothic, the lettering of road and airport signs.
 
@@ -26,13 +28,13 @@ The typeface is [Overpass](https://fonts.google.com/specimen/Overpass), which de
 
 - `square-signal.svg`, `square-board.svg`: fill the frame, for places that crop or round the corners themselves.
 - `rounded-signal.svg`, `rounded-board.svg`: an app icon with its own rounded corners and margin.
-- `icon.svg`, `icon-dark.svg`: the mark cropped to the tiles, the tiles alone on light backgrounds, as in the website's header, and on their signal tile, as the favicon, on dark.
+- `icon.svg`, `icon-dark.svg`: the tiles alone, on light backgrounds as in the website's header, and on dark a step lighter with signal-yellow letters, as on a departure board.
 - `icon-mono.svg`: the simple mark, the tiles alone in one color with the letters cut out and no hinge, so it holds at 16px.
 
 The lockups pair the mark with the name in Overpass ExtraBold, outlined, cropped to their content:
 
 - `logo.svg`, `logo-stacked.svg`: the name beside the tiles, or under them, on light backgrounds, as in the website's header.
-- `logo-dark.svg`, `logo-stacked-dark.svg`: the tiles on their signal tile and the name in paper, on dark backgrounds.
+- `logo-dark.svg`, `logo-stacked-dark.svg`: the dark tiles of `icon-dark.svg` and the name in paper, on dark backgrounds.
 - `logo-mono.svg`, `logo-stacked-mono.svg`: the simple mark and the name in black, for one-color use.
 
 `exports/` holds what is rendered from them, committed so each integration can copy its file:
