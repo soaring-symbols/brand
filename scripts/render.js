@@ -10,7 +10,7 @@ import { dirname } from 'node:path'
 import { Resvg } from '@resvg/resvg-js'
 import { ROOT, googleFont } from './fonts.js'
 
-const ASSETS = `${ROOT}/node_modules/soaring-symbols/dist/assets`
+const AIRLINES = `${ROOT}/node_modules/soaring-symbols/dist/airlines`
 
 const FONTS = [
     ...(await googleFont('Overpass', [400, 700, 800])),
@@ -105,7 +105,7 @@ for (const width of [192, 512]) {
 
 const mark = markSvg('square-signal')
 const asset = (slug, file) =>
-    readFileSync(`${ASSETS}/${slug}/${file}.svg`, 'utf8')
+    readFileSync(`${AIRLINES}/${slug}/${file}.svg`, 'utf8')
 const uri = (svg) =>
     `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
 const img = (svg, x, y, w, h = w) =>
