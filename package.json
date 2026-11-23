@@ -1,22 +1,22 @@
 {
-    "name": "soaring-symbols-brand",
-    "private": true,
-    "description": "The Soaring Symbols project's own brand mark, and the icons and store images rendered from it.",
-    "type": "module",
-    "scripts": {
-        "render": "node scripts/render.js",
-        "marks": "node scripts/marks.js",
-        "lint": "eslint . && prettier --check .",
-        "format": "prettier --write ."
-    },
-    "devDependencies": {
-        "@eslint/js": "^10.0.1",
-        "@resvg/resvg-js": "^2.6.2",
-        "eslint": "^10.14.0",
-        "eslint-config-prettier": "^10.1.8",
-        "fontkitten": "^1.0.3",
-        "globals": "^17.14.0",
-        "prettier": "^3.9.10",
-        "soaring-symbols": "^0.6.0"
-    }
+  "name": "soaring-symbols-brand",
+  "private": true,
+  "description": "The Soaring Symbols project's own brand mark, and the icons and store images rendered from it.",
+  "type": "module",
+  "scripts": {
+    "render": "node scripts/render.js",
+    "marks": "node scripts/marks.js",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "fontkitten": "^1.0.3",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "soaring-symbols": "^0.6.0"
+  }
 }
