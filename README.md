@@ -46,7 +46,7 @@ The lockups pair the mark with the name in Overpass ExtraBold, outlined, cropped
 | `figma/icon.png`                  | 128×128   | [Figma plugin](https://github.com/soaring-symbols/figma) Community icon                              |
 | `figma/thumbnail.png`             | 1920×1080 | Figma plugin Community thumbnail                                                                     |
 | `framer/icon.png`                 | 128×128   | [Framer plugin](https://github.com/soaring-symbols/framer) Marketplace icon                          |
-| `framer/thumbnail.png`            | 1920×1080 | Framer plugin Marketplace thumbnail                                                                  |
+| `framer/thumbnail.png`            | 1600×1200 | Framer plugin Marketplace thumbnail                                                                  |
 | `framer/screenshot-*.png`         | 1600×1200 | Framer plugin Marketplace screenshots: an airline's marks in the light and dark themes, and the list |
 | `framer/poster.png`               | 2400×400  | The Framer creator profile's poster, uploaded by hand                                                |
 | `web/apple-touch-icon.png`        | 180×180   | The [website](https://github.com/soaring-symbols/website)'s home screen icon on iPhone and iPad      |

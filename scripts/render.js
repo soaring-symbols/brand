@@ -460,23 +460,25 @@ write(
     render(screenshot(light, await framerList(light), DARK), 1600),
 )
 
-// The thumbnail: the name and a headline beside the plugin window, and a
-// tile being dragged out of it onto marks already placed on the canvas
-const framerThumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="Overpass">
-<rect width="1920" height="1080" fill="${DARK}"/>
+// The thumbnail, at the 1600 × 1200 Framer recommends for a plugin's media:
+// the name and a headline beside the plugin window, and a tile being dragged
+// out of it onto marks already placed on the canvas (both moved down a
+// little from the Figma thumbnail's places, for the taller frame)
+const framerThumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" font-family="Overpass">
+<rect width="1600" height="1200" fill="${DARK}"/>
 <g>${brandMark}</g>
 <text x="196" y="150.6" font-size="36" font-weight="700" fill="${LIGHT}">Soaring Symbols</text>
-<text font-size="92" font-weight="800" fill="${LIGHT}">
-  <tspan x="120" y="370">Airline logos,</tspan>
-  <tspan x="120" y="476">right in Framer.</tspan>
+<text font-size="84" font-weight="800" fill="${LIGHT}">
+  <tspan x="120" y="420">Airline logos,</tspan>
+  <tspan x="120" y="520">right in Framer.</tspan>
 </text>
-<rect x="120" y="560" width="160" height="12" rx="6" fill="${YELLOW}"/>
-${placed}
-<g transform="translate(1100 ${(1080 - FH * 1.6) / 2}) scale(1.6)">${framerWindow(light, framerDetail(light, ...VN, '#000000'))}</g>
-${drag.replaceAll('#0d99ff', '#0099ff')}
+<rect x="120" y="600" width="160" height="12" rx="6" fill="${YELLOW}"/>
+<g transform="translate(0 80)">${placed}</g>
+<g transform="translate(960 ${(1200 - FH * 1.6) / 2}) scale(1.6)">${framerWindow(light, framerDetail(light, ...VN, '#000000'))}</g>
+<g transform="translate(0 80)">${drag.replaceAll('#0d99ff', '#0099ff')}</g>
 </svg>`
 
-write('framer/thumbnail.png', render(framerThumb, 1920))
+write('framer/thumbnail.png', render(framerThumb, 1600))
 
 // The poster on the Framer creator profile (2400 × 400): the dark lockup in
 // the middle between airline icons on tiles, as on the thumbnails' canvas.
