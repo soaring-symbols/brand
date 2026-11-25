@@ -39,15 +39,18 @@ The lockups pair the mark with the name in Overpass ExtraBold, outlined, cropped
 
 `exports/` holds what is rendered from them, committed so each integration can copy its file:
 
-| File                              | Size      | Used by                                                                                         |
-| :-------------------------------- | :-------- | :---------------------------------------------------------------------------------------------- |
-| `github/avatar-signal.png`        | 512×512   | The GitHub organization avatar (`avatar-board.png` is the dark option)                          |
-| `raycast/icon-signal.png`         | 512×512   | [Raycast extension](https://github.com/soaring-symbols/raycast) icon                            |
-| `figma/icon.png`                  | 128×128   | [Figma plugin](https://github.com/soaring-symbols/figma) Community icon                         |
-| `figma/thumbnail.png`             | 1920×1080 | Figma plugin Community thumbnail                                                                |
-| `web/apple-touch-icon.png`        | 180×180   | The [website](https://github.com/soaring-symbols/website)'s home screen icon on iPhone and iPad |
-| `web/icon-{192,512}.png`          | 192, 512  | The website's web app manifest icons, `purpose: "any"`                                          |
-| `web/icon-maskable-{192,512}.png` | 192, 512  | The same, `purpose: "maskable"`: the tiles shrunk to fit Android's 80% safe zone                |
+| File                              | Size      | Used by                                                                                              |
+| :-------------------------------- | :-------- | :--------------------------------------------------------------------------------------------------- |
+| `github/avatar-signal.png`        | 512×512   | The GitHub organization avatar (`avatar-board.png` is the dark option)                               |
+| `raycast/icon-signal.png`         | 512×512   | [Raycast extension](https://github.com/soaring-symbols/raycast) icon                                 |
+| `figma/icon.png`                  | 128×128   | [Figma plugin](https://github.com/soaring-symbols/figma) Community icon                              |
+| `figma/thumbnail.png`             | 1920×1080 | Figma plugin Community thumbnail                                                                     |
+| `framer/icon.png`                 | 128×128   | [Framer plugin](https://github.com/soaring-symbols/framer) Marketplace icon                          |
+| `framer/thumbnail.png`            | 1920×1080 | Framer plugin Marketplace thumbnail                                                                  |
+| `framer/screenshot-*.png`         | 1600×1200 | Framer plugin Marketplace screenshots: an airline's marks in the light and dark themes, and the list |
+| `web/apple-touch-icon.png`        | 180×180   | The [website](https://github.com/soaring-symbols/website)'s home screen icon on iPhone and iPad      |
+| `web/icon-{192,512}.png`          | 192, 512  | The website's web app manifest icons, `purpose: "any"`                                               |
+| `web/icon-maskable-{192,512}.png` | 192, 512  | The same, `purpose: "maskable"`: the tiles shrunk to fit Android's 80% safe zone                     |
 
 The website's favicon and social cards are drawn in the [website repo](https://github.com/soaring-symbols/website) itself; its home screen and manifest icons come from `web/`.
 
@@ -66,8 +69,8 @@ Then render the PNGs:
 npm run render
 ```
 
-`scripts/render.js` renders every file in `exports/` with resvg. Fonts are downloaded from Google Fonts on the first run and cached in `node_modules/.cache/brand`. The airline marks in the Figma thumbnail come from the `soaring-symbols` package.
+`scripts/render.js` renders every file in `exports/` with resvg. Fonts are downloaded from Google Fonts on the first run and cached in `node_modules/.cache/brand`. The airline marks in the Figma and Framer images come from the `soaring-symbols` package.
 
 ## License
 
-The Soaring Symbols name and mark, and every file in `marks/` and `exports/`, are © 2026 Anh Thang, all rights reserved. They are not licensed for reuse: you may show them unchanged only to refer or link to the Soaring Symbols project and its integrations. The airline marks in the Figma thumbnail belong to their owners (see the package's [Disclaimer](https://github.com/soaring-symbols/soaring-symbols/blob/main/DISCLAIMER.md)), and Overpass is licensed under the SIL Open Font License 1.1.
+The Soaring Symbols name and mark, and every file in `marks/` and `exports/`, are © 2026 Anh Thang, all rights reserved. They are not licensed for reuse: you may show them unchanged only to refer or link to the Soaring Symbols project and its integrations. The airline marks in the Figma and Framer images belong to their owners (see the package's [Disclaimer](https://github.com/soaring-symbols/soaring-symbols/blob/main/DISCLAIMER.md)), and Overpass is licensed under the SIL Open Font License 1.1.

@@ -246,3 +246,234 @@ ${drag}
 </svg>`
 
 write('figma/thumbnail.png', render(thumb, 1920))
+
+// The Framer Marketplace images: the plugin's panel drawn as Framer shows
+// it, in CSS pixels (a 360 × 560 iframe under Framer's window title bar)
+// and scaled up, in Framer's light and dark themes. Framer asks for images
+// that show the plugin itself with little text, so the screenshots are the
+// panel alone and the thumbnail adds only the name and a headline.
+const FRAMER_THEMES = {
+    light: {
+        window: '#ffffff',
+        bg: '#ffffff',
+        tertiary: '#f3f3f3',
+        divider: '#eeeeee',
+        text: '#000000',
+        secondary: '#666666',
+        tertiaryText: '#999999',
+        shadow: 0.18,
+    },
+    dark: {
+        window: '#111111',
+        bg: '#111111',
+        tertiary: '#2b2b2b',
+        divider: '#2b2b2b',
+        text: '#ffffff',
+        secondary: '#bbbbbb',
+        tertiaryText: '#888888',
+        shadow: 0.5,
+    },
+}
+const FW = 360,
+    FBAR = 40,
+    FH = 560 + FBAR
+
+// Framer's plugin window: the plugin's icon and name, and a close button
+const framerWindow = (t, body) => `
+<defs>
+  <filter id="window-shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#000000" flood-opacity="${t.shadow}"/>
+  </filter>
+  <clipPath id="window"><rect width="${FW}" height="${FH}" rx="14"/></clipPath>
+</defs>
+<rect width="${FW}" height="${FH}" rx="14" fill="${t.window}" filter="url(#window-shadow)"/>
+<g clip-path="url(#window)" font-family="Inter">
+  <svg x="14" y="12" width="16" height="16" viewBox="0 0 512 512">${mark.replace(/<\/?svg[^>]*>/g, '')}</svg>
+  <text x="38" y="24.4" font-size="12" font-weight="700" fill="${t.text}">Soaring Symbols</text>
+  <path d="M ${FW - 26} 15 l 10 10 M ${FW - 16} 15 l -10 10" stroke="${t.tertiaryText}" stroke-width="1.5" stroke-linecap="round"/>
+  <g transform="translate(0 ${FBAR})">${body}</g>
+</g>`
+
+// The previews' checkerboard, light in both themes as in the plugin
+const checker = (
+    id,
+) => `<pattern id="${id}" width="12" height="12" patternUnits="userSpaceOnUse">
+  <rect width="12" height="12" fill="#ffffff"/>
+  <path d="M0 0h6v6H0zM6 6h6v6H6z" fill="#f0f0f0"/>
+</pattern>`
+
+// The detail view of an airline: a row per mark type and a column per
+// version, as src/main.ts and src/styles.css lay them out
+const framerDetail = (t, slug, title, meta, mono) => {
+    const colW = (FW - 24 - 16) / 3
+    const colX = (i) => 12 + i * (colW + 8)
+    const checkerId = `checker-${t.bg.slice(1)}`
+    // The marks a little larger than the plugin's 56px, so they read at
+    // Marketplace sizes; a logo's square box is mostly empty above and below
+    const markSize = { logo: 90, 'logo-stacked': 66, icon: 52 }
+    const tileCell = (file, i, y, dark, size, tint) => {
+        let svg = asset(slug, file)
+        if (tint) svg = svg.replaceAll(/currentColor/gi, tint)
+        const x = colX(i)
+
+        return `<rect x="${x + 0.5}" y="${y + 0.5}" width="${colW - 1}" height="81" rx="8" fill="none" stroke="${t.divider}"/>
+<rect x="${x + 5}" y="${y + 5}" width="${colW - 10}" height="72" rx="5" fill="${dark ? '#1e1e1e' : '#ffffff'}"/>
+${dark ? '' : `<rect x="${x + 5}" y="${y + 5}" width="${colW - 10}" height="72" rx="5" fill="url(#${checkerId})"/>`}
+${img(svg, x + (colW - size) / 2, y + 41 - size / 2, size)}`
+    }
+    const rows = [
+        ['Logo', 'logo'],
+        ['Stacked logo', 'logo-stacked'],
+        ['Icon', 'icon'],
+    ]
+        .map(([label, type], r) => {
+            const y = 129 + r * 110
+            const size = markSize[type]
+
+            return `<text x="12" y="${y + 20}" font-size="12" font-weight="600" fill="${t.text}">${label}</text>
+${tileCell(type, 0, y + 28, false, size)}
+${tileCell(`${type}-mono`, 1, y + 28, false, size, mono)}
+${tileCell(`${type}-dark`, 2, y + 28, true, size)}`
+        })
+        .join('\n')
+
+    return `<defs>${checker(checkerId)}</defs>
+<rect width="${FW}" height="560" fill="${t.bg}"/>
+<rect y="0" width="${FW}" height="1" fill="${t.divider}"/>
+<path d="M 18 25 h 14 M 18 25 l 6 -6 M 18 25 l 6 6" fill="none" stroke="${t.text}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="46" y="21" font-size="13" font-weight="700" fill="${t.text}">${title}</text>
+<text x="46" y="37" font-size="12" fill="${t.tertiaryText}">${meta}</text>
+<rect y="50" width="${FW}" height="1" fill="${t.divider}"/>
+<text x="12" y="76.4" font-size="12" font-weight="600" fill="${t.text}">Size</text>
+<rect x="45" y="59" width="78" height="26" rx="6" fill="${t.tertiary}"/>
+<text x="53" y="76.4" font-size="12" font-weight="600" fill="${t.text}">64 × 64</text>
+<path d="M 108 70 l 4 4 l 4 -4" fill="none" stroke="${t.text}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect y="93" width="${FW}" height="1" fill="${t.divider}"/>
+<text x="${colX(0)}" y="115.4" font-size="12" font-weight="600" fill="${t.tertiaryText}">Color</text>
+<text x="${colX(1)}" y="115.4" font-size="12" font-weight="600" fill="${t.tertiaryText}">Mono</text>
+<rect x="${colX(1) + 35.5}" y="102.5" width="17" height="17" rx="4" fill="${t.bg}" stroke="${t.divider}"/>
+<rect x="${colX(1) + 38}" y="105" width="12" height="12" rx="2" fill="${mono}"/>
+<circle cx="${colX(1) + 65}" cy="111" r="8.5" fill="#d99e09" stroke="${t.divider}"/>
+<text x="${colX(2)}" y="115.4" font-size="12" font-weight="600" fill="${t.tertiaryText}">Dark background</text>
+<rect y="128" width="${FW}" height="1" fill="${t.divider}"/>
+${rows}
+<rect y="515" width="${FW}" height="1" fill="${t.divider}"/>
+<text font-size="12" fill="${t.tertiaryText}">
+  <tspan x="12" y="533.4">Click a mark to insert it (it replaces a selected SVG), or</tspan>
+  <tspan x="12" y="549.4">drag it onto the canvas. <tspan text-decoration="underline">soaringsymbols.org</tspan></tspan>
+</text>`
+}
+
+// The list view: the search field, then the alliances with marks and the
+// airlines, in the order the plugin lists them for an empty search
+const framerList = async (t) => {
+    const { listAirlines, listAlliances } = await import('soaring-symbols')
+    const hasMarks = (owner) => Object.values(owner.assets).some(Boolean)
+    const thumb = (root, owner) => {
+        const type = ['icon', 'logo', 'tail'].find((k) => owner.assets[k])
+        const info = owner.assets[type]
+
+        return readFileSync(
+            `${ROOT}/node_modules/soaring-symbols/dist/${root}/${owner.slug}/${info.color ? type : `${type}-mono`}.svg`,
+            'utf8',
+        )
+    }
+    const alliances = listAlliances().filter(hasMarks)
+    const airlines = listAirlines().filter((a) => !a.defunct)
+    let y = 47
+    const parts = []
+    const heading = (label) => {
+        parts.push(
+            `<text x="12" y="${y + 24}" font-size="12" font-weight="600" fill="${t.secondary}">${label}</text>`,
+        )
+        y += 28
+    }
+    const row = (svg, name, meta) => {
+        parts.push(`${img(svg, 12, y + 6, 28)}
+<text x="50" y="${y + 18}" font-size="12" font-weight="700" fill="${t.text}">${name}</text>
+<text x="50" y="${y + 34}" font-size="12" fill="${t.tertiaryText}">${meta}</text>`)
+        y += 44
+    }
+    heading('Alliances')
+    for (const alliance of alliances) {
+        row(
+            thumb('alliances', alliance),
+            alliance.name,
+            `Airline alliance · ${alliance.founded}`,
+        )
+    }
+    heading('Airlines')
+    for (const airline of airlines) {
+        if (y > 500) break
+        row(
+            thumb('airlines', airline),
+            airline.name,
+            [airline.iata, airline.icao, airline.country].join(' · '),
+        )
+    }
+
+    return `<rect width="${FW}" height="560" fill="${t.bg}"/>
+<rect y="0" width="${FW}" height="1" fill="${t.divider}"/>
+<rect x="8" y="8" width="${FW - 16}" height="30" rx="8" fill="${t.tertiary}"/>
+<text x="16" y="27.4" font-size="12" fill="${t.tertiaryText}">Search airlines or alliances by name or code</text>
+<rect y="46" width="${FW}" height="1" fill="${t.divider}"/>
+<clipPath id="list"><rect y="47" width="${FW}" height="468"/></clipPath>
+<g clip-path="url(#list)">${parts.join('\n')}</g>
+<rect y="515" width="${FW}" height="45" fill="${t.bg}"/>
+<rect y="515" width="${FW}" height="1" fill="${t.divider}"/>
+<text font-size="12" fill="${t.tertiaryText}">
+  <tspan x="12" y="533.4">Click a mark to insert it (it replaces a selected SVG), or</tspan>
+  <tspan x="12" y="549.4">drag it onto the canvas. <tspan text-decoration="underline">soaringsymbols.org</tspan></tspan>
+</text>`
+}
+
+const VN = ['vietnam-airlines', 'Vietnam Airlines', 'VN · HVN · SkyTeam']
+
+// A screenshot: the plugin window alone, 1.8x, on the brand's dark board or
+// on paper for the dark theme, so the window stands off its background
+const screenshot = (t, body, background) => {
+    const scale = 1.8
+    const x = (1600 - FW * scale) / 2,
+        y = (1200 - FH * scale) / 2
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200">
+<rect width="1600" height="1200" fill="${background}"/>
+<g transform="translate(${x} ${y}) scale(${scale})">${framerWindow(t, body)}</g>
+</svg>`
+}
+
+const { light, dark } = FRAMER_THEMES
+write('framer/icon.png', render(markSvg('square-signal'), 128))
+write(
+    'framer/screenshot-marks-light.png',
+    render(
+        screenshot(light, framerDetail(light, ...VN, '#000000'), DARK),
+        1600,
+    ),
+)
+write(
+    'framer/screenshot-marks-dark.png',
+    render(screenshot(dark, framerDetail(dark, ...VN, '#d99e09'), LIGHT), 1600),
+)
+write(
+    'framer/screenshot-search-light.png',
+    render(screenshot(light, await framerList(light), DARK), 1600),
+)
+
+// The thumbnail: the name and a headline beside the plugin window, and a
+// tile being dragged out of it onto marks already placed on the canvas
+const framerThumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="Overpass">
+<rect width="1920" height="1080" fill="${DARK}"/>
+<g>${brandMark}</g>
+<text x="196" y="150.6" font-size="36" font-weight="700" fill="${LIGHT}">Soaring Symbols</text>
+<text font-size="92" font-weight="800" fill="${LIGHT}">
+  <tspan x="120" y="370">Airline logos,</tspan>
+  <tspan x="120" y="476">right in Framer.</tspan>
+</text>
+<rect x="120" y="560" width="160" height="12" rx="6" fill="${YELLOW}"/>
+${placed}
+<g transform="translate(1100 ${(1080 - FH * 1.6) / 2}) scale(1.6)">${framerWindow(light, framerDetail(light, ...VN, '#000000'))}</g>
+${drag.replaceAll('#0d99ff', '#0099ff')}
+</svg>`
+
+write('framer/thumbnail.png', render(framerThumb, 1920))
