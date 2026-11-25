@@ -48,6 +48,7 @@ The lockups pair the mark with the name in Overpass ExtraBold, outlined, cropped
 | `framer/icon.png`                 | 128×128   | [Framer plugin](https://github.com/soaring-symbols/framer) Marketplace icon                          |
 | `framer/thumbnail.png`            | 1920×1080 | Framer plugin Marketplace thumbnail                                                                  |
 | `framer/screenshot-*.png`         | 1600×1200 | Framer plugin Marketplace screenshots: an airline's marks in the light and dark themes, and the list |
+| `framer/poster.png`               | 2400×400  | The Framer creator profile's poster, uploaded by hand                                                |
 | `web/apple-touch-icon.png`        | 180×180   | The [website](https://github.com/soaring-symbols/website)'s home screen icon on iPhone and iPad      |
 | `web/icon-{192,512}.png`          | 192, 512  | The website's web app manifest icons, `purpose: "any"`                                               |
 | `web/icon-maskable-{192,512}.png` | 192, 512  | The same, `purpose: "maskable"`: the tiles shrunk to fit Android's 80% safe zone                     |

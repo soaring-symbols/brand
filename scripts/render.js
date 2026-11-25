@@ -477,3 +477,42 @@ ${drag.replaceAll('#0d99ff', '#0099ff')}
 </svg>`
 
 write('framer/thumbnail.png', render(framerThumb, 1920))
+
+// The poster on the Framer creator profile (2400 × 400): the dark lockup in
+// the middle between airline icons on tiles, as on the thumbnails' canvas.
+// Everything sits in the middle band, clear of the corners a profile page
+// may cover with the avatar or crop on narrow screens.
+const lockup = markSvg('logo-dark')
+const [, , lockupW, lockupH] = lockup
+    .match(/viewBox="([\d.\s]+)"/)[1]
+    .split(/\s+/)
+    .map(Number)
+const LOCKUP_H = 90,
+    LOCKUP_W = (LOCKUP_H * lockupW) / lockupH
+const lockupX = (2400 - LOCKUP_W) / 2
+const POSTER_TILE = 150,
+    POSTER_GAP = 28,
+    POSTER_MARGIN = 90
+const posterTile = (slug, x) => {
+    const y = (400 - POSTER_TILE) / 2
+
+    return `<rect x="${x}" y="${y}" width="${POSTER_TILE}" height="${POSTER_TILE}" rx="16" fill="#2b3139"/>
+<rect x="${x + 10}" y="${y + 10}" width="${POSTER_TILE - 20}" height="${POSTER_TILE - 20}" rx="10" fill="#ffffff"/>
+${img(asset(slug, 'icon'), x + 28, y + 28, POSTER_TILE - 56)}`
+}
+const groupW = 3 * POSTER_TILE + 2 * POSTER_GAP
+const posterGroup = (slugs, left) =>
+    slugs
+        .map((slug, i) =>
+            posterTile(slug, left + i * (POSTER_TILE + POSTER_GAP)),
+        )
+        .join('\n')
+
+const poster = `<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="400" viewBox="0 0 2400 400">
+<rect width="2400" height="400" fill="${DARK}"/>
+${posterGroup(['qantas', 'lufthansa', 'singapore-airlines'], lockupX - POSTER_MARGIN - groupW)}
+${lockup.replace('<svg ', `<svg x="${lockupX}" y="${(400 - LOCKUP_H) / 2}" width="${LOCKUP_W}" height="${LOCKUP_H}" `)}
+${posterGroup(['vietnam-airlines', 'air-france', 'cathay-pacific'], lockupX + LOCKUP_W + POSTER_MARGIN)}
+</svg>`
+
+write('framer/poster.png', render(poster, 2400))
