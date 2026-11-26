@@ -12,7 +12,7 @@
         "fontkitten": "^1.0.3",
         "globals": "^17.14.0",
         "prettier": "^3.9.10",
-        "soaring-symbols": "^0.6.0",
+        "soaring-symbols": "^0.6.1",
       },
     },
   },
@@ -193,7 +193,7 @@
 
     "shebang-regex": ["shebang-regex@3.0.0", "", {}, "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A=="],
 
-    "soaring-symbols": ["soaring-symbols@0.6.0", "", { "peerDependencies": { "@resvg/resvg-wasm": "2.6.2" }, "optionalPeers": ["@resvg/resvg-wasm"] }, "sha512-3NgOAlR83yOJCHPhK0UbxvDuMHYNM6/T624Ppbf87qZKvfOzMZ2MkpgIBJhBm8SuIxXg+5nASxsAd/ifav0N4g=="],
+    "soaring-symbols": ["soaring-symbols@0.6.1", "", { "peerDependencies": { "@resvg/resvg-wasm": "2.6.2" }, "optionalPeers": ["@resvg/resvg-wasm"] }, "sha512-WI0tO9Y97rJn+9ZsN2jDvyATX0ojCdvJ2VYFHLRkiKCKGgZnQ4jSoHVZdA9AZC1u7RYwpPp9JlxBR5i80Oyk6A=="],
 
     "tiny-inflate": ["tiny-inflate@1.0.3", "", {}, "sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw=="],
 

@@ -38,7 +38,7 @@ const write = (path, png) => {
 const markSvg = (name) => readFileSync(`${ROOT}/marks/${name}.svg`, 'utf8')
 
 // Icons: the square marks fill the frame, for places that crop or round the
-// corners themselves (GitHub, Figma); the rounded ones carry their own
+// corners themselves (GitHub, Figma, Webflow); the rounded ones carry their own
 // corners and margin (Raycast)
 for (const variant of ['signal', 'board']) {
     write(
@@ -51,6 +51,8 @@ for (const variant of ['signal', 'board']) {
     )
 }
 write('figma/icon.png', render(markSvg('square-signal'), 128))
+// The app icon in the Webflow app's settings, which asks for 256×256
+write('webflow/icon.png', render(markSvg('square-signal'), 256))
 
 // Web icons for the website: the square mark for iOS home screens and the
 // manifest's "any" icons, and a maskable one for Android, which masks icons
@@ -518,3 +520,321 @@ ${posterGroup(['vietnam-airlines', 'air-france', 'cathay-pacific'], lockupX + LO
 </svg>`
 
 write('framer/poster.png', render(poster, 2400))
+
+// The Webflow Marketplace images: a 900 × 900 logo (a logomark, at most
+// 50 KB) and screenshots at 1280 × 846. The screenshots draw the extension's
+// panel as soaring-symbols/webflow lays it out in src/index.html (CSS
+// pixels, in the Designer's dark panel colors, under the Designer's
+// extension title bar), beside a headline, and one shows a page with a mark
+// just inserted into the selected element.
+write('webflow/logo.png', render(markSvg('square-signal'), 900))
+
+// The panel's colors in the Designer's dark and light appearances, as
+// src/index.html in soaring-symbols/webflow sets them
+const WF = {
+    bg: '#2b2b2b',
+    bar: '#1e1e1e',
+    border: '#444444',
+    text: '#f5f5f5',
+    secondary: '#a3a3a3',
+    blue: '#146ef5',
+}
+const WF_LIGHT = {
+    ...WF,
+    bg: '#ffffff',
+    bar: '#f5f5f5',
+    border: '#dedede',
+    text: '#1e1e1e',
+    secondary: '#6b6b6b',
+}
+const WW = 360,
+    WBAR = 36,
+    WH = 560 + WBAR
+
+// The Designer's extension window: the app's icon and name, and a close
+// button, then the panel
+const webflowWindow = (t, body) => `
+<defs>
+  <filter id="wf-shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+  </filter>
+  <clipPath id="wf-window"><rect width="${WW}" height="${WH}" rx="6"/></clipPath>
+</defs>
+<rect width="${WW}" height="${WH}" rx="6" fill="${t.bg}" filter="url(#wf-shadow)"/>
+<g clip-path="url(#wf-window)" font-family="Inter">
+  <rect width="${WW}" height="${WBAR}" fill="${t.bar}"/>
+  <svg x="12" y="10" width="16" height="16" viewBox="0 0 512 512">${mark.replace(/<\/?svg[^>]*>/g, '')}</svg>
+  <text x="36" y="22.2" font-size="12" font-weight="700" fill="${t.text}">Soaring Symbols</text>
+  <path d="M ${WW - 24} 13 l 10 10 M ${WW - 14} 13 l -10 10" stroke="${t.secondary}" stroke-width="1.5" stroke-linecap="round"/>
+  <rect y="${WBAR - 1}" width="${WW}" height="1" fill="${t.border}"/>
+  <g transform="translate(0 ${WBAR})">${body}</g>
+</g>`
+
+const webflowFooter = (
+    t,
+) => `<rect y="516" width="${WW}" height="44" fill="${t.bg}"/>
+<rect y="516" width="${WW}" height="1" fill="${t.border}"/>
+<text font-size="11" fill="${t.secondary}">
+  <tspan x="12" y="534">Select an element, then click a mark to insert it.</tspan>
+  <tspan x="12" y="550" text-decoration="underline">soaringsymbols.org</tspan>
+</text>`
+
+// The detail view: a row per mark type and a column per version
+const webflowDetail = (t, slug, title, meta, mono, primary) => {
+    const colW = (WW - 24 - 16) / 3
+    const colX = (i) => 12 + i * (colW + 8)
+    const markSize = { logo: 84, 'logo-stacked': 62, icon: 50 }
+    const cell = (file, i, y, dark, size, tint) => {
+        let svg = asset(slug, file)
+        if (tint) svg = svg.replaceAll(/currentColor/gi, tint)
+        const x = colX(i)
+
+        return `<rect x="${x + 0.5}" y="${y + 0.5}" width="${colW - 1}" height="81" rx="6" fill="none" stroke="${t.border}"/>
+<rect x="${x + 5}" y="${y + 5}" width="${colW - 10}" height="72" rx="4" fill="${dark ? '#1e1e1e' : '#ffffff'}"/>
+${dark ? '' : `<rect x="${x + 5}" y="${y + 5}" width="${colW - 10}" height="72" rx="4" fill="url(#wf-checker)"/>`}
+${img(svg, x + (colW - size) / 2, y + 41 - size / 2, size)}`
+    }
+    const rows = [
+        ['Logo', 'logo'],
+        ['Stacked logo', 'logo-stacked'],
+        ['Icon', 'icon'],
+    ]
+        .map(([label, type], r) => {
+            const y = 126 + r * 112
+            const size = markSize[type]
+
+            return `<text x="12" y="${y + 20}" font-size="11" font-weight="600" fill="${t.text}">${label}</text>
+${cell(type, 0, y + 28, false, size)}
+${cell(`${type}-mono`, 1, y + 28, false, size, mono)}
+${cell(`${type}-dark`, 2, y + 28, true, size)}`
+        })
+        .join('\n')
+
+    return `<defs><pattern id="wf-checker" width="12" height="12" patternUnits="userSpaceOnUse">
+  <rect width="12" height="12" fill="#ffffff"/>
+  <path d="M0 0h6v6H0zM6 6h6v6H6z" fill="#ebebeb"/>
+</pattern></defs>
+<path d="M 16 25 h 14 M 16 25 l 6 -6 M 16 25 l 6 6" fill="none" stroke="${t.text}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="46" y="21" font-size="13" font-weight="700" fill="${t.text}">${title}</text>
+<text x="46" y="37" font-size="11" fill="${t.secondary}">${meta}</text>
+<rect y="49" width="${WW}" height="1" fill="${t.border}"/>
+<text x="12" y="74" font-size="11" fill="${t.text}">Size</text>
+<rect x="40.5" y="58.5" width="76" height="24" rx="4" fill="${t.bg}" stroke="${t.border}"/>
+<text x="48" y="74" font-size="11" fill="${t.text}">64 × 64</text>
+<path d="M 102 68 l 4 4 l 4 -4" fill="none" stroke="${t.text}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect y="91" width="${WW}" height="1" fill="${t.border}"/>
+<text x="${colX(0)}" y="112" font-size="11" font-weight="500" fill="${t.secondary}">Color</text>
+<text x="${colX(1)}" y="112" font-size="11" font-weight="500" fill="${t.secondary}">Mono</text>
+<rect x="${colX(1) + 33.5}" y="99.5" width="17" height="17" rx="4" fill="${t.bg}" stroke="${t.border}"/>
+<rect x="${colX(1) + 36}" y="102" width="12" height="12" rx="2" fill="${mono}"/>
+<circle cx="${colX(1) + 62}" cy="108" r="8.5" fill="${primary}" stroke="${t.border}"/>
+<text x="${colX(2)}" y="112" font-size="11" font-weight="500" fill="${t.secondary}">Dark background</text>
+<rect y="125" width="${WW}" height="1" fill="${t.border}"/>
+${rows}
+${webflowFooter(t)}`
+}
+
+// The list view: the search field, then the alliances with marks and the
+// airlines, as the extension lists them for an empty search
+const { listAirlines, listAlliances } = await import('soaring-symbols')
+const webflowList = (t) => {
+    const hasMarks = (owner) => Object.values(owner.assets).some(Boolean)
+    const thumb = (root, owner) => {
+        const type = ['icon', 'logo', 'tail'].find((k) => owner.assets[k])
+        const info = owner.assets[type]
+
+        return readFileSync(
+            `${ROOT}/node_modules/soaring-symbols/dist/${root}/${owner.slug}/${info.color ? type : `${type}-mono`}.svg`,
+            'utf8',
+        )
+    }
+    let y = 49
+    const parts = []
+    const heading = (label) => {
+        parts.push(
+            `<text x="12" y="${y + 24}" font-size="11" font-weight="600" fill="${t.secondary}">${label}</text>`,
+        )
+        y += 30
+    }
+    const row = (svg, name, meta) => {
+        parts.push(`<rect x="12.5" y="${y + 6.5}" width="31" height="31" rx="6" fill="#ffffff" stroke="${t.border}"/>
+${img(svg, 15, y + 9, 26)}
+<text x="54" y="${y + 20}" font-size="11" font-weight="600" fill="${t.text}">${name}</text>
+<text x="54" y="${y + 35}" font-size="11" fill="${t.secondary}">${meta}</text>`)
+        y += 44
+    }
+    heading('Alliances')
+    for (const alliance of listAlliances().filter(hasMarks)) {
+        row(
+            thumb('alliances', alliance),
+            alliance.name,
+            `Airline alliance · ${alliance.founded}`,
+        )
+    }
+    heading('Airlines')
+    for (const airline of listAirlines().filter((a) => !a.defunct)) {
+        if (y > 500) break
+        row(
+            thumb('airlines', airline),
+            airline.name,
+            [airline.iata, airline.icao, airline.country].join(' · '),
+        )
+    }
+
+    return `<rect x="8.5" y="8.5" width="${WW - 17}" height="32" rx="5" fill="none" stroke="${t.border}"/>
+<text x="17" y="28.5" font-size="11" fill="${t.secondary}">Search airlines or alliances by name or code</text>
+<rect y="48" width="${WW}" height="1" fill="${t.border}"/>
+<clipPath id="wf-list"><rect y="49" width="${WW}" height="467"/></clipPath>
+<g clip-path="url(#wf-list)">${parts.join('\n')}</g>
+${webflowFooter(t)}`
+}
+
+// A page in the Designer's canvas: a partner strip, with the mark just
+// inserted into the selected element, outlined in the Designer's blue
+const webflowPage = (w, h) => {
+    const tiles = [
+        'vietnam-airlines',
+        'singapore-airlines',
+        'japan-airlines',
+        'qatar-airways',
+        'turkish-airlines',
+        'emirates',
+    ]
+    const tileW = (w - 2 * 48 - 2 * 20) / 3,
+        tileH = 110
+    const cells = tiles
+        .map((slug, i) => {
+            const x = 48 + (i % 3) * (tileW + 20)
+            const y = 196 + Math.floor(i / 3) * (tileH + 20)
+            const selected = i === 0
+
+            return `<rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" rx="10" fill="#f4f4f2"/>
+${img(asset(slug, 'logo'), x + (tileW - 120) / 2, y + (tileH - 120) / 2, 120)}
+${
+    selected
+        ? `<rect x="${x - 1}" y="${y - 1}" width="${tileW + 2}" height="${tileH + 2}" fill="none" stroke="${WF.blue}" stroke-width="2"/>
+<rect x="${x - 2}" y="${y - 22}" width="164" height="20" fill="${WF.blue}"/>
+<text x="${x + 6}" y="${y - 8}" font-family="Inter" font-size="11" font-weight="600" fill="#ffffff">Image · soaring-symbols-64</text>`
+        : ''
+}`
+        })
+        .join('\n')
+
+    return `<defs><clipPath id="wf-page"><rect width="${w}" height="${h}" rx="8"/></clipPath></defs>
+<rect width="${w}" height="${h}" rx="8" fill="#ffffff" filter="url(#wf-shadow)"/>
+<g clip-path="url(#wf-page)">
+  <rect width="${w}" height="64" fill="#ffffff"/>
+  <rect y="64" width="${w}" height="1" fill="#e6e6e6"/>
+  <text x="48" y="40" font-size="20" font-weight="800" fill="${DARK}">Skyward</text>
+  <g font-family="Inter" font-size="13" fill="#555555" text-anchor="end">
+    <text x="${w - 48}" y="39">Contact</text>
+    <text x="${w - 118}" y="39">Deals</text>
+    <text x="${w - 178}" y="39">Destinations</text>
+  </g>
+  <text x="48" y="130" font-size="34" font-weight="800" fill="${DARK}">Fly with our partners</text>
+  <text x="48" y="164" font-family="Inter" font-size="14" fill="#666666">Airlines that take you further, with one booking.</text>
+  ${cells}
+</g>`
+}
+
+const SW = 1280,
+    SH = 846
+const airlineCount = Math.floor(listAirlines().length / 10) * 10
+
+// A screenshot: a headline over the brand's dark board, or its paper for
+// the light panel, and the panel (and, for the insert one, the page) beside
+// it
+const webflowShot = ({ title, lines, body, page, theme = WF }) => {
+    const light = theme === WF_LIGHT
+    const ink = light ? DARK : LIGHT
+    const scale = 1.25
+    const wx = SW - 64 - WW * scale,
+        wy = (SH - WH * scale) / 2
+    const text = (x, y, width) => `
+<text x="${x}" y="${y}" font-size="44" font-weight="800" fill="${ink}">${title}</text>
+<text font-size="22" fill="${ink}" fill-opacity="0.75">${lines
+        .map(
+            (line, i) =>
+                `<tspan x="${x}" y="${y + 52 + i * 32}">${line}</tspan>`,
+        )
+        .join('')}</text>
+<rect x="${x}" y="${y - 82}" width="${width}" height="0" fill="none"/>`
+    const left = page
+        ? `${text(64, 116, 640)}<g transform="translate(64 ${116 + 52 + lines.length * 32 + 10})">${webflowPage(wx - 64 - 48, SH - (116 + 52 + lines.length * 32 + 10) - 56)}</g>`
+        : text(80, 330, 600)
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${SW}" height="${SH}" viewBox="0 0 ${SW} ${SH}" font-family="Overpass">
+<rect width="${SW}" height="${SH}" fill="${light ? LIGHT : DARK}"/>
+${left}
+<g transform="translate(${wx} ${wy}) scale(${scale})">${webflowWindow(theme, body)}</g>
+</svg>`
+}
+
+write(
+    'webflow/screenshot-insert.png',
+    render(
+        webflowShot({
+            title: 'Airline logos, one click away',
+            lines: [
+                'Select an element, click a mark: it lands as an image,',
+                'added to your assets with alt text.',
+            ],
+            body: webflowDetail(WF, ...VN, '#000000', '#d99e09'),
+            page: true,
+        }),
+        SW,
+    ),
+)
+write(
+    'webflow/screenshot-search.png',
+    render(
+        webflowShot({
+            title: `Search ${airlineCount}+ airlines`,
+            lines: [
+                'By name, IATA or ICAO code, callsign or',
+                'slug, plus oneworld, SkyTeam and',
+                'Star Alliance.',
+            ],
+            body: webflowList(WF),
+        }),
+        SW,
+    ),
+)
+write(
+    'webflow/screenshot-versions.png',
+    render(
+        webflowShot({
+            title: 'Every version of a mark',
+            lines: [
+                'Color, monochrome in any color, and',
+                'the version for dark backgrounds, for',
+                'each logo, stacked logo, icon and tail.',
+            ],
+            body: webflowDetail(WF, ...VN, '#d99e09', '#d99e09'),
+        }),
+        SW,
+    ),
+)
+write(
+    'webflow/screenshot-light.png',
+    render(
+        webflowShot({
+            title: 'Matches your Designer',
+            lines: [
+                'Light or dark, the panel follows the',
+                'Designer’s appearance, and paints mono',
+                'marks in any color or the airline’s own.',
+            ],
+            body: webflowDetail(
+                WF_LIGHT,
+                'japan-airlines',
+                'Japan Airlines',
+                'JL · JAL · oneworld',
+                '#cc0000',
+                '#cc0000',
+            ),
+            theme: WF_LIGHT,
+        }),
+        SW,
+    ),
+)
