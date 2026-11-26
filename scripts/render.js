@@ -592,9 +592,11 @@ const webflowWindow = (t, body) => `
   <g transform="translate(0 ${WBAR})">${body}</g>
 </g>`
 
-// A page in the Designer's canvas: a partner strip, with the mark just
-// inserted into the selected element, outlined in the Designer's blue
-const webflowPage = (w, h) => {
+// Pages in the Designer's canvas, each with a mark just inserted into the
+// selected element, outlined in the Designer's blue
+
+// An airline's partner strip
+const webflowPartnerPage = (w, h) => {
     const tiles = [
         'vietnam-airlines',
         'singapore-airlines',
@@ -640,13 +642,69 @@ ${
 </g>`
 }
 
+// The hero of the demo site (soaring-symbols.webflow.io), with its row of
+// marks for dark backgrounds, the first one just inserted
+const webflowDemoPage = (w, h) => {
+    const cx = w / 2
+    const marks = [
+        asset('vietnam-airlines', 'icon-dark'),
+        asset('singapore-airlines', 'icon-dark'),
+        asset('qatar-airways', 'icon-dark'),
+        asset('emirates', 'icon-dark'),
+        readFileSync(`${AIRLINES}/../alliances/skyteam/icon-dark.svg`, 'utf8'),
+        readFileSync(
+            `${AIRLINES}/../alliances/star-alliance/icon-dark.svg`,
+            'utf8',
+        ),
+    ]
+    const size = 44,
+        gap = 30,
+        rowX = cx - (marks.length * size + (marks.length - 1) * gap) / 2,
+        rowY = 416
+    const row = marks
+        .map((svg, i) => img(svg, rowX + i * (size + gap), rowY, size))
+        .join('\n')
+    const logoH = 30,
+        logoW = (logoH * lockupW) / lockupH
+    const primaryW = 178,
+        secondaryW = 166,
+        buttonsX = cx - (primaryW + 10 + secondaryW) / 2
+
+    return `<defs><clipPath id="wf-page"><rect width="${w}" height="${h}" rx="8"/></clipPath></defs>
+<rect width="${w}" height="${h}" rx="8" fill="${DARK}" filter="url(#wf-shadow)"/>
+<rect x="0.5" y="0.5" width="${w - 1}" height="${h - 1}" rx="7.5" fill="none" stroke="${LIGHT}" stroke-opacity="0.14"/>
+<g clip-path="url(#wf-page)">
+<g transform="translate(0 ${Math.round((h - (rowY + size - 52)) / 2 - 52)})" text-anchor="middle">
+  ${lockup.replace('<svg ', `<svg x="${cx - logoW / 2}" y="52" width="${logoW}" height="${logoH}" `)}
+  <rect x="${cx - 46}" y="98" width="92" height="24" rx="12" fill="none" stroke="${YELLOW}" stroke-opacity="0.45"/>
+  <text x="${cx}" y="114.5" font-size="11" font-weight="700" fill="${YELLOW}">for Webflow</text>
+  <text font-size="38" font-weight="800" fill="${LIGHT}">
+    <tspan x="${cx}" y="180">Every airline logo,</tspan>
+    <tspan x="${cx}" y="224">ready for your site</tspan>
+  </text>
+  <text font-size="14" fill="#b5b6b0">
+    <tspan x="${cx}" y="264">Search ${airlineCount}+ airlines and the airline alliances by name or code,</tspan>
+    <tspan x="${cx}" y="286">then drop their logos onto your page as crisp SVG images.</tspan>
+  </text>
+  <rect x="${buttonsX}" y="314" width="${primaryW}" height="40" rx="20" fill="${YELLOW}"/>
+  <text x="${buttonsX + primaryW / 2}" y="339" font-size="14" font-weight="700" fill="${DARK}">Explore the collection</text>
+  <rect x="${buttonsX + primaryW + 10.5}" y="314.5" width="${secondaryW - 1}" height="39" rx="19.5" fill="none" stroke="${LIGHT}" stroke-opacity="0.35"/>
+  <text x="${buttonsX + primaryW + 10 + secondaryW / 2}" y="339" font-size="14" font-weight="700" fill="${LIGHT}">Get the Webflow app</text>
+  ${row}
+  <rect x="${rowX - 4}" y="${rowY - 4}" width="${size + 8}" height="${size + 8}" fill="none" stroke="${WF.blue}" stroke-width="2"/>
+  <rect x="${rowX - 5}" y="${rowY - 25}" width="164" height="20" fill="${WF.blue}"/>
+  <text x="${rowX + 1}" y="${rowY - 11}" text-anchor="start" font-family="Inter" font-size="11" font-weight="600" fill="#ffffff">Image · soaring-symbols-64</text>
+</g>
+</g>`
+}
+
 const SW = 1280,
     SH = 846
 const airlineCount = Math.floor(listAirlines().length / 10) * 10
 
 // A screenshot: a headline over the brand's dark board, or its paper for
-// the light panel, and the panel (and, for the insert one, the page) beside
-// it
+// the light panel, and the panel (and, for the insert and demo ones, a page)
+// beside it
 const webflowShot = ({ title, lines, body, page, theme = WF }) => {
     const light = theme === WF_LIGHT
     const ink = light ? DARK : LIGHT
@@ -663,7 +721,7 @@ const webflowShot = ({ title, lines, body, page, theme = WF }) => {
         .join('')}</text>
 <rect x="${x}" y="${y - 82}" width="${width}" height="0" fill="none"/>`
     const left = page
-        ? `${text(64, 116, 640)}<g transform="translate(64 ${116 + 52 + lines.length * 32 + 10})">${webflowPage(wx - 64 - 48, SH - (116 + 52 + lines.length * 32 + 10) - 56)}</g>`
+        ? `${text(64, 116, 640)}<g transform="translate(64 ${116 + 52 + lines.length * 32 + 10})">${page(wx - 64 - 48, SH - (116 + 52 + lines.length * 32 + 10) - 56)}</g>`
         : text(80, 330, 600)
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${SW}" height="${SH}" viewBox="0 0 ${SW} ${SH}" font-family="Overpass">
@@ -674,6 +732,21 @@ ${left}
 }
 
 write(
+    'webflow/screenshot-demo.png',
+    render(
+        webflowShot({
+            title: 'Ready for dark sections',
+            lines: [
+                'Marks for dark backgrounds fit a dark hero, as on',
+                'the demo site, soaring-symbols.webflow.io.',
+            ],
+            body: panelDetail(WF, ...VN, '#000000', VN_PRIMARY),
+            page: webflowDemoPage,
+        }),
+        SW,
+    ),
+)
+write(
     'webflow/screenshot-insert.png',
     render(
         webflowShot({
@@ -683,7 +756,7 @@ write(
                 'added to your assets with alt text.',
             ],
             body: panelDetail(WF, ...VN, '#000000', VN_PRIMARY),
-            page: true,
+            page: webflowPartnerPage,
         }),
         SW,
     ),
