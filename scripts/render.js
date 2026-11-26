@@ -160,7 +160,6 @@ const brandMark = mark.replace(
 // panel alone and the thumbnail adds only the name and a headline.
 const FRAMER_THEMES = {
     light: {
-        window: '#ffffff',
         bg: '#ffffff',
         tertiary: '#f3f3f3',
         divider: '#eeeeee',
@@ -170,7 +169,7 @@ const FRAMER_THEMES = {
         shadow: 0.18,
     },
     dark: {
-        window: '#111111',
+        dark: true,
         bg: '#111111',
         tertiary: '#2b2b2b',
         divider: '#2b2b2b',
@@ -192,7 +191,7 @@ const framerWindow = (t, body) => `
   </filter>
   <clipPath id="window"><rect width="${FW}" height="${FH}" rx="14"/></clipPath>
 </defs>
-<rect width="${FW}" height="${FH}" rx="14" fill="${t.window}" filter="url(#window-shadow)"/>
+<rect width="${FW}" height="${FH}" rx="14" fill="${t.bg}" filter="url(#window-shadow)"/>
 <g clip-path="url(#window)" font-family="Inter">
   <svg x="14" y="12" width="16" height="16" viewBox="0 0 512 512">${mark.replace(/<\/?svg[^>]*>/g, '')}</svg>
   <text x="38" y="24.4" font-size="12" font-weight="700" fill="${t.text}">Soaring Symbols</text>
@@ -210,10 +209,10 @@ const checker = (
 
 // A line icon from the plugin, drawn from its 16 × 16 path data; `filled`
 // parts are painted instead of stroked, as `.filled` in src/styles.css
-const framerIcon = (paths, x, y, size, color) =>
+const panelIcon = (paths, x, y, size, color) =>
     `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 16 16" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${paths.replaceAll('class="filled"', `fill="${color}" stroke="none"`)}</svg>`
 
-const FRAMER_ICONS = {
+const PANEL_ICONS = {
     search: '<circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/>',
     back: '<path d="M10 3.5 5.5 8l4.5 4.5"/>',
     chevron: '<path d="m5 6.5 3 3 3-3"/>',
@@ -226,22 +225,23 @@ const FRAMER_ICONS = {
 
 // The footer: one dashed line with a tip for the view (an example search in
 // the list, how to use a mark in the detail view) and the website
-const FRAMER_TIPS = {
-    list: [FRAMER_ICONS.search, 'Try VN, HVN or Vietnam'],
-    detail: [FRAMER_ICONS.drag, 'Click or drag to insert'],
+const PANEL_TIPS = {
+    list: [PANEL_ICONS.search, 'Try VN, HVN or Vietnam'],
+    detail: [PANEL_ICONS.drag, 'Click or drag to insert'],
 }
-const framerFooter = (
-    t,
-    view,
-) => `<rect x="12.5" y="516.5" width="${FW - 25}" height="33" rx="10" fill="none" stroke="${t.tertiaryText}" stroke-opacity="0.45" stroke-dasharray="3 3"/>
-${framerIcon((t.tips ?? FRAMER_TIPS)[view][0], 25, 525, 16, t.tertiaryText)}
-<text x="49" y="537.4" font-size="12" fill="${t.tertiaryText}">${(t.tips ?? FRAMER_TIPS)[view][1]}</text>
+const panelFooter = (t, view) => {
+    const [tipIcon, tip] = (t.tips ?? PANEL_TIPS)[view]
+
+    return `<rect x="12.5" y="516.5" width="${FW - 25}" height="33" rx="10" fill="none" stroke="${t.tertiaryText}" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+${panelIcon(tipIcon, 25, 525, 16, t.tertiaryText)}
+<text x="49" y="537.4" font-size="12" fill="${t.tertiaryText}">${tip}</text>
 <text x="${FW - 25}" y="537.4" font-size="12" text-anchor="end" fill="${t.tertiaryText}">soaringsymbols.org</text>`
+}
 
 // The detail view of an airline, as src/main.ts and src/styles.css lay it
 // out: the column names as pills, the size and mono color on the same three
 // columns under them, then a row per mark type
-const framerDetail = (t, slug, title, meta, mono, primary) => {
+const panelDetail = (t, slug, title, meta, mono, primary) => {
     const colW = (FW - 24 - 16) / 3
     const colX = (i) => 12 + i * (colW + 8)
     const checkerId = `checker-${t.bg.slice(1)}`
@@ -283,7 +283,7 @@ ${tileCell(`${type}-dark`, 2, y + 34, true, size)}`
         const left = x + (colW - (14 + 6 + textW)) / 2
 
         return `<rect x="${x + 0.5}" y="54.5" width="${colW - 1}" height="29" rx="8.5" fill="none" stroke="${t.divider}"/>
-${framerIcon(icon, left, 62, 14, t.secondary)}
+${panelIcon(icon, left, 62, 14, t.secondary)}
 <text x="${left + 20}" y="73.4" font-size="12" font-weight="500" fill="${t.text}">${label}</text>`
     }
     const field = (
@@ -292,30 +292,31 @@ ${framerIcon(icon, left, 62, 14, t.secondary)}
         chevron = true,
     ) => `<rect x="${colX(i)}" y="92" width="${colW}" height="30" rx="9" fill="${t.tertiary}"/>
 ${body}
-${chevron ? framerIcon(FRAMER_ICONS.chevron, colX(i) + colW - 22, 99, 16, t.tertiaryText) : ''}`
+${chevron ? panelIcon(PANEL_ICONS.chevron, colX(i) + colW - 22, 99, 16, t.tertiaryText) : ''}`
     const swatch = (cx, color) =>
         `<circle cx="${cx}" cy="107" r="7" fill="${color}"/><circle cx="${cx}" cy="107" r="6.5" fill="none" stroke="${t.text}" stroke-opacity="0.2"/>`
 
     return `<defs>${checker(checkerId)}</defs>
 <rect width="${FW}" height="560" fill="${t.bg}"/>
-${framerIcon(FRAMER_ICONS.back, 15, 17, 16, t.secondary)}
+${panelIcon(PANEL_ICONS.back, 15, 17, 16, t.secondary)}
 <text x="44" y="21.6" font-size="13" font-weight="700" fill="${t.text}">${title}</text>
 <text x="44" y="38.4" font-size="12" fill="${t.tertiaryText}">${meta}</text>
-${pill(0, FRAMER_ICONS.color, 'Color', 32)}
-${pill(1, FRAMER_ICONS.mono, 'Mono', 32)}
-${pill(2, FRAMER_ICONS.dark, 'Dark', 28)}
+${pill(0, PANEL_ICONS.color, 'Color', 32)}
+${pill(1, PANEL_ICONS.mono, 'Mono', 32)}
+${pill(2, PANEL_ICONS.dark, 'Dark', 28)}
 ${field(0, `<text x="${colX(0) + 10}" y="111.4" font-size="12" fill="${t.tertiaryText}">Size</text><text x="${colX(0) + 40}" y="111.4" font-size="12" font-weight="500" fill="${t.text}">64 px</text>`)}
 ${field(1, `${swatch(colX(1) + 17, mono)}<text x="${colX(1) + 30}" y="111.4" font-size="12" font-weight="500" fill="${t.text}">${mono.toUpperCase()}</text>`)}
 ${field(2, `${swatch(colX(2) + colW / 2 - 25, primary)}<text x="${colX(2) + colW / 2 - 12}" y="111.4" font-size="12" font-weight="600" fill="${t.text}">Primary</text>`, false)}
 <rect x="12" y="132" width="${FW - 24}" height="1" fill="${t.divider}"/>
 ${rows}
-${framerFooter(t, 'detail')}`
+${panelFooter(t, 'detail')}`
 }
+
+const { listAirlines, listAlliances } = await import('soaring-symbols')
 
 // The list view: the search field, then the alliances with marks and the
 // airlines, in the order the plugin lists them for an empty search
-const framerList = async (t) => {
-    const { listAirlines, listAlliances } = await import('soaring-symbols')
+const panelList = async (t) => {
     const hasMarks = (owner) => Object.values(owner.assets).some(Boolean)
     // A row's mark: on a dark theme (t.dark) its version for dark
     // backgrounds when it has one, else its color one, which Webflow puts on
@@ -370,12 +371,12 @@ const framerList = async (t) => {
 
     return `<rect width="${FW}" height="560" fill="${t.bg}"/>
 <rect x="8" y="8" width="${FW - 16}" height="30" rx="8" fill="${t.tertiary}"/>
-${framerIcon(FRAMER_ICONS.search, 17, 16, 14, t.tertiaryText)}
+${panelIcon(PANEL_ICONS.search, 17, 16, 14, t.tertiaryText)}
 <text x="37" y="27.4" font-size="12" fill="${t.tertiaryText}">Search airlines and alliances</text>
 <clipPath id="list"><rect y="46" width="${FW}" height="466"/></clipPath>
 <g clip-path="url(#list)">${parts.join('\n')}</g>
 <rect y="512" width="${FW}" height="48" fill="${t.bg}"/>
-${framerFooter(t, 'list')}`
+${panelFooter(t, 'list')}`
 }
 
 const VN = ['vietnam-airlines', 'Vietnam Airlines', 'VN · HVN · SkyTeam']
@@ -383,11 +384,10 @@ const VN_PRIMARY = '#d99e09'
 
 // The Figma Community thumbnail (1920 × 1080): the name, a headline and a
 // line beside the plugin's panel, which src/ui.html in soaring-symbols/figma
-// lays out as the Framer plugin's (drawn by framerDetail in Figma's light
+// lays out as the Framer plugin's (drawn by panelDetail in Figma's light
 // theme colors, 1.6x and without a window title bar), with a tile being
 // dragged out of it onto marks placed on the canvas
 const FIGMA_LIGHT = {
-    window: '#ffffff',
     bg: '#ffffff',
     tertiary: '#f5f5f5',
     divider: '#e6e6e6',
@@ -404,7 +404,7 @@ const figmaPanel = `<defs>
 </defs>
 <g transform="translate(${1920 - 120 - FW * FIGMA_SCALE} ${(1080 - 560 * FIGMA_SCALE) / 2}) scale(${FIGMA_SCALE})">
   <rect width="${FW}" height="560" rx="12" fill="${FIGMA_LIGHT.bg}" filter="url(#figma-shadow)"/>
-  <g clip-path="url(#figma-panel)" font-family="Inter">${framerDetail(FIGMA_LIGHT, ...VN, '#000000', VN_PRIMARY)}</g>
+  <g clip-path="url(#figma-panel)" font-family="Inter">${panelDetail(FIGMA_LIGHT, ...VN, '#000000', VN_PRIMARY)}</g>
 </g>`
 
 const thumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="Overpass">
@@ -447,7 +447,7 @@ write(
     render(
         screenshot(
             light,
-            framerDetail(light, ...VN, '#000000', VN_PRIMARY),
+            panelDetail(light, ...VN, '#000000', VN_PRIMARY),
             DARK,
         ),
         1600,
@@ -458,7 +458,7 @@ write(
     render(
         screenshot(
             dark,
-            framerDetail(dark, ...VN, VN_PRIMARY, VN_PRIMARY),
+            panelDetail(dark, ...VN, VN_PRIMARY, VN_PRIMARY),
             LIGHT,
         ),
         1600,
@@ -466,7 +466,7 @@ write(
 )
 write(
     'framer/screenshot-search-light.png',
-    render(screenshot(light, await framerList(light), DARK), 1600),
+    render(screenshot(light, await panelList(light), DARK), 1600),
 )
 
 // The thumbnail, at the 1600 × 1200 Framer recommends for a plugin's media:
@@ -483,7 +483,7 @@ const framerThumb = `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height
 </text>
 <rect x="120" y="600" width="160" height="12" rx="6" fill="${YELLOW}"/>
 <g transform="translate(0 80)">${placed}</g>
-<g transform="translate(960 ${(1200 - FH * 1.6) / 2}) scale(1.6)">${framerWindow(light, framerDetail(light, ...VN, '#000000', VN_PRIMARY))}</g>
+<g transform="translate(960 ${(1200 - FH * 1.6) / 2}) scale(1.6)">${framerWindow(light, panelDetail(light, ...VN, '#000000', VN_PRIMARY))}</g>
 <g transform="translate(0 80)">${drag.replaceAll('#0d99ff', '#0099ff')}</g>
 </svg>`
 
@@ -538,14 +538,13 @@ write('webflow/logo.png', render(markSvg('square-signal'), 900))
 
 // The panel's colors in the Designer's dark and light appearances, as
 // src/index.html in soaring-symbols/webflow sets them
-// framerDetail and framerList draw its panel, which is laid out as the
+// panelDetail and panelList draw its panel, which is laid out as the
 // Framer plugin's, with Webflow's own tips (no dragging: a mark goes into
 // the selected element); on the dark panel the list shows marks for dark
 // backgrounds, and a light chip under a mark that has none
 const WF = {
     bg: '#2b2b2b',
     bar: '#1e1e1e',
-    border: '#444444',
     divider: '#444444',
     tertiary: '#363636',
     text: '#f5f5f5',
@@ -555,15 +554,14 @@ const WF = {
     dark: true,
     chip: true,
     tips: {
-        list: FRAMER_TIPS.list,
-        detail: [FRAMER_ICONS.click, 'Select, then click a mark'],
+        list: PANEL_TIPS.list,
+        detail: [PANEL_ICONS.click, 'Select, then click a mark'],
     },
 }
 const WF_LIGHT = {
     ...WF,
     bg: '#ffffff',
     bar: '#f5f5f5',
-    border: '#dedede',
     divider: '#dedede',
     tertiary: '#ebebeb',
     text: '#1e1e1e',
@@ -590,11 +588,9 @@ const webflowWindow = (t, body) => `
   <svg x="12" y="10" width="16" height="16" viewBox="0 0 512 512">${mark.replace(/<\/?svg[^>]*>/g, '')}</svg>
   <text x="36" y="22.2" font-size="12" font-weight="700" fill="${t.text}">Soaring Symbols</text>
   <path d="M ${WW - 24} 13 l 10 10 M ${WW - 14} 13 l -10 10" stroke="${t.secondary}" stroke-width="1.5" stroke-linecap="round"/>
-  <rect y="${WBAR - 1}" width="${WW}" height="1" fill="${t.border}"/>
+  <rect y="${WBAR - 1}" width="${WW}" height="1" fill="${t.divider}"/>
   <g transform="translate(0 ${WBAR})">${body}</g>
 </g>`
-
-const { listAirlines } = await import('soaring-symbols')
 
 // A page in the Designer's canvas: a partner strip, with the mark just
 // inserted into the selected element, outlined in the Designer's blue
@@ -686,7 +682,7 @@ write(
                 'Select an element, click a mark: it lands as an image,',
                 'added to your assets with alt text.',
             ],
-            body: framerDetail(WF, ...VN, '#000000', VN_PRIMARY),
+            body: panelDetail(WF, ...VN, '#000000', VN_PRIMARY),
             page: true,
         }),
         SW,
@@ -702,7 +698,7 @@ write(
                 'slug, plus oneworld, SkyTeam and',
                 'Star Alliance.',
             ],
-            body: await framerList(WF),
+            body: await panelList(WF),
         }),
         SW,
     ),
@@ -717,7 +713,7 @@ write(
                 'the version for dark backgrounds, for',
                 'each logo, stacked logo, icon and tail.',
             ],
-            body: framerDetail(WF, ...VN, VN_PRIMARY, VN_PRIMARY),
+            body: panelDetail(WF, ...VN, VN_PRIMARY, VN_PRIMARY),
         }),
         SW,
     ),
@@ -732,7 +728,7 @@ write(
                 'Designer’s appearance, and paints mono',
                 'marks in any color or the airline’s own.',
             ],
-            body: framerDetail(
+            body: panelDetail(
                 WF_LIGHT,
                 'japan-airlines',
                 'Japan Airlines',
