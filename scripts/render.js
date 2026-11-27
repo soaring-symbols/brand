@@ -304,7 +304,7 @@ ${panelIcon(PANEL_ICONS.back, 15, 17, 16, t.secondary)}
 ${pill(0, PANEL_ICONS.color, 'Color', 32)}
 ${pill(1, PANEL_ICONS.mono, 'Mono', 32)}
 ${pill(2, PANEL_ICONS.dark, 'Dark', 28)}
-${field(0, `<text x="${colX(0) + 10}" y="111.4" font-size="12" fill="${t.tertiaryText}">Size</text><text x="${colX(0) + 40}" y="111.4" font-size="12" font-weight="500" fill="${t.text}">64 px</text>`)}
+${field(0, `<text x="${colX(0) + 10}" y="111.4" font-size="12" fill="${t.tertiaryText}">Size</text><text x="${colX(0) + 40}" y="111.4" font-size="12" font-weight="500" fill="${t.text}">${t.size ?? '64 px'}</text>`)}
 ${field(1, `${swatch(colX(1) + 17, mono)}<text x="${colX(1) + 30}" y="111.4" font-size="12" font-weight="500" fill="${t.text}">${mono.toUpperCase()}</text>`)}
 ${field(2, `${swatch(colX(2) + colW / 2 - 25, primary)}<text x="${colX(2) + colW / 2 - 12}" y="111.4" font-size="12" font-weight="600" fill="${t.text}">Primary</text>`, false)}
 <rect x="12" y="132" width="${FW - 24}" height="1" fill="${t.divider}"/>
@@ -812,5 +812,170 @@ write(
             theme: WF_LIGHT,
         }),
         SW,
+    ),
+)
+
+// The Miro Marketplace screenshots: at most 1258 × 706, full bleed, on no
+// white or light gray background, with a line or two of text at most. The
+// app's panel, as soaring-symbols/miro lays it out in src/panel.html (the
+// Webflow panel's light colors, which it always uses, with its own tip),
+// docks left of a board in Miro's dark theme, beside Miro's toolbar
+const MIRO = {
+    ...WF_LIGHT,
+    blue: '#4262ff',
+    // Its default width on the board, which has no pixels
+    size: '256',
+    tips: {
+        list: PANEL_TIPS.list,
+        detail: [PANEL_ICONS.drag, 'Click or drag a mark'],
+    },
+}
+const MSW = 1258,
+    MSH = 706
+const MW = 360,
+    MBAR = 48,
+    MH = 560 + MBAR
+const MX = 88,
+    MY = (MSH - MH) / 2
+
+// Miro's dark board: a dot grid on near black
+const miroBoard = `<defs>
+  <pattern id="mr-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+    <circle cx="12" cy="12" r="1.2" fill="${LIGHT}" fill-opacity="0.12"/>
+  </pattern>
+  <filter id="mr-shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.5"/>
+  </filter>
+  <clipPath id="mr-panel"><rect width="${MW}" height="${MH}" rx="12"/></clipPath>
+</defs>
+<rect width="${MSW}" height="${MSH}" fill="${DARK}"/>
+<rect width="${MSW}" height="${MSH}" fill="url(#mr-dots)"/>`
+
+// Miro's toolbar: a column of tools, the app's icon last and selected
+const miroToolbar = () => {
+    const x = 24,
+        w = 48,
+        tools = 6
+    const h = 16 + tools * 40 + 48
+    const y = MY
+
+    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#ffffff" filter="url(#mr-shadow)"/>
+${Array.from(
+    { length: tools },
+    (_, i) =>
+        `<rect x="${x + 14}" y="${y + 20 + i * 40}" width="20" height="20" rx="5" fill="none" stroke="#8a8c94" stroke-width="1.6"/>`,
+).join('\n')}
+<rect x="${x + 6}" y="${y + 12 + tools * 40}" width="36" height="36" rx="8" fill="${MIRO.blue}" fill-opacity="0.12"/>
+<svg x="${x + 12}" y="${y + 18 + tools * 40}" width="24" height="24" viewBox="0 0 512 512">${mark.replace(/<\/?svg[^>]*>/g, '')}</svg>`
+}
+
+// The app's panel: its name and a close button over the panel itself
+const miroPanel = (body) => `
+<g transform="translate(${MX} ${MY})">
+<rect width="${MW}" height="${MH}" rx="12" fill="${MIRO.bg}" filter="url(#mr-shadow)"/>
+<g clip-path="url(#mr-panel)" font-family="Inter">
+  <text x="20" y="30" font-size="15" font-weight="700" fill="${MIRO.text}">Soaring Symbols</text>
+  <path d="M ${MW - 30} 19 l 10 10 M ${MW - 20} 19 l -10 10" stroke="${MIRO.secondary}" stroke-width="1.5" stroke-linecap="round"/>
+  <g transform="translate(0 ${MBAR})">${body}</g>
+</g>
+</g>`
+
+// The headline right of the panel: a title and at most one line under it
+const RX = MX + MW + 64,
+    RW = MSW - RX - 56
+const miroText = (title, line, y) => `
+<text x="${RX}" y="${y}" font-size="36" font-weight="800" fill="${LIGHT}">${title}</text>
+${line ? `<text x="${RX}" y="${y + 38}" font-size="20" fill="${LIGHT}" fill-opacity="0.75">${line}</text>` : ''}`
+
+const miroShot = (body, right) =>
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${MSW}" height="${MSH}" viewBox="0 0 ${MSW} ${MSH}" font-family="Overpass">
+${miroBoard}
+${miroToolbar()}
+${miroPanel(body)}
+${right}
+</svg>`
+
+// A frame on the board holding airline logos, the first one just dropped
+// there and selected, with the pointer that dropped it
+const miroFrame = () => {
+    const x = RX,
+        y = 196,
+        w = RW,
+        h = MSH - y - 52
+    const slugs = [
+        'vietnam-airlines',
+        'singapore-airlines',
+        'japan-airlines',
+        'qatar-airways',
+        'turkish-airlines',
+        'emirates',
+    ]
+    const pad = 36,
+        gap = 20,
+        cw = (w - 2 * pad - 2 * gap) / 3,
+        ch = (h - 2 * pad - gap) / 2,
+        size = Math.min(cw, ch) - 16
+    const cells = slugs
+        .map((slug, i) => {
+            const cx = x + pad + (i % 3) * (cw + gap) + cw / 2
+            const cy = y + pad + Math.floor(i / 3) * (ch + gap) + ch / 2
+
+            return img(asset(slug, 'logo'), cx - size / 2, cy - size / 2, size)
+        })
+        .join('\n')
+    // The selected logo's box: the drawn part of a 64 × 64 logo, which is
+    // wider than tall
+    const sx = x + pad + (cw - size) / 2,
+        sy = y + pad + (ch - size) / 2 + size * 0.3,
+        sw = size,
+        sh = size * 0.4
+    const handle = (hx, hy) =>
+        `<circle cx="${hx}" cy="${hy}" r="5" fill="#ffffff" stroke="${MIRO.blue}" stroke-width="2"/>`
+
+    return `<text x="${x}" y="${y - 10}" font-family="Inter" font-size="13" fill="${LIGHT}" fill-opacity="0.6">Partner airlines</text>
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ffffff"/>
+${cells}
+<rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="none" stroke="${MIRO.blue}" stroke-width="2"/>
+${handle(sx, sy)}${handle(sx + sw, sy)}${handle(sx, sy + sh)}${handle(sx + sw, sy + sh)}
+<path d="M ${sx + sw - 18} ${sy + sh - 4} l 0 30 l 8 -7 l 6 13 l 6 -2.5 l -6 -12.5 l 11 -0.5 Z" fill="#1e1e1e" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>`
+}
+
+write(
+    'miro/screenshot-1.png',
+    render(
+        miroShot(
+            panelDetail(MIRO, ...VN, '#000000', VN_PRIMARY),
+            `${miroText('Airline logos on your board', 'Click a mark, or drag it where it goes.', 104)}
+${miroFrame()}`,
+        ),
+        MSW,
+    ),
+)
+write(
+    'miro/screenshot-2.png',
+    render(
+        miroShot(
+            await panelList(MIRO),
+            miroText(
+                `Search ${airlineCount}+ airlines`,
+                'By name or code, plus the airline alliances.',
+                MSH / 2 - 10,
+            ),
+        ),
+        MSW,
+    ),
+)
+write(
+    'miro/screenshot-3.png',
+    render(
+        miroShot(
+            panelDetail(MIRO, ...VN, VN_PRIMARY, VN_PRIMARY),
+            miroText(
+                'Every version of a mark',
+                'Color, mono in any color, and for dark boards.',
+                MSH / 2 - 10,
+            ),
+        ),
+        MSW,
     ),
 )
